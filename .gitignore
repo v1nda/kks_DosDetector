@@ -1,0 +1,9 @@
+.vscode/settings.json
+dosdetector
+obj/cgui.o
+obj/dosdetector.o
+obj/message.o
+obj/sniffer.o
+obj/statistics.o
+obj/timer.o
+dosdetector.log
