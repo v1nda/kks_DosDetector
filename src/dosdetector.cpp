@@ -155,18 +155,18 @@ int main(int argc, char *argv[])
         std::signal(SIGINT, interruptHandlingFunc);
 
         Timer timer;
-        Cgui cgui;
+        // Cgui cgui;
         Sniffer sniffer(device);
         Statistic statistic(timeGap, numOfGaps);
 
         initDone = true;
 
-        std::thread cguiRenderingThread(cguiRenderingThreadFunc, std::ref(timer), std::ref(sniffer), std::ref(statistic), std::ref(cgui));
+        // std::thread cguiRenderingThread(cguiRenderingThreadFunc, std::ref(timer), std::ref(sniffer), std::ref(statistic), std::ref(cgui));
         std::thread snifferThread(snifferThreadFunc, std::ref(timer), std::ref(sniffer));
         std::thread getDataThread(getDataThreadFunc, std::ref(timer), std::ref(sniffer));
         std::thread statisticCapturesThread(statisticCalculationThreadFunc, std::ref(timer), std::ref(sniffer), std::ref(statistic));
 
-        cguiRenderingThread.join();
+        // cguiRenderingThread.join();
         snifferThread.join();
         getDataThread.join();
         statisticCapturesThread.join();

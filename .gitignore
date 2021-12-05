@@ -6,4 +6,3 @@ obj/message.o
 obj/sniffer.o
 obj/statistics.o
 obj/timer.o
-dosdetector.log
