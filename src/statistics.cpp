@@ -122,12 +122,6 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
         std::string s = "";
         message(NOTICE_M, "DEBUG: open debug file");
 
-        // message(NOTICE_M, "DEBUG: setting timer to 10 sec");
-        // for (int i = 0; i < 10; i++)
-        // {
-        //         std::this_thread::sleep_until(timer.getTimeCutoff(STATISTIC_CUTOFF_F));
-        // }
-
         for (int i = 0; i < this->numberOfPeriods; i++)
         {
 
@@ -138,8 +132,7 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
                         return;
                 }
 
-                message(NOTICE_M, "Start of " + std::to_string(i + 1) + " capture out of " + std::to_string(this->numberOfPeriods) +
-                                      " (" + secondsToString(this->periodLength) + ") ...");
+                message(NOTICE_M, "Start of " + std::to_string(i + 1) + " capture out of " + std::to_string(this->numberOfPeriods) + " (" + secondsToString(this->periodLength) + ") ...");
 
                 for (int j = 0; j < this->periodLength; j++)
                 {
@@ -155,10 +148,6 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
                                 capture.push_back(atoi(s.c_str()));
                                 fullCapture.push_back(atoi(s.c_str()));
                         }
-
-                        // long long bytes = sniffer.getTrafficPerSec();
-                        // capture.push_back(bytes);
-                        // fullCapture.push_back(bytes);
                 }
 
                 message(NOTICE_M, std::to_string(i + 1) + " capture out of " + std::to_string(this->numberOfPeriods) + " completed");
@@ -204,7 +193,7 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
                 std::raise(SIGINT);
         }
 
-        this->k = this->windowSize * 0.7;
+        this->numOfExcesses = this->windowSize * 0.8;
 
         str.clear();
 
@@ -215,7 +204,7 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
         this->standartDeviation /= (float)(fullCapture.size());
 
         this->hardLimit = this->mainCentralLine + 5 * sqrt((this->smoothingCoeff / (2 - this->smoothingCoeff)) * this->standartDeviation);
-        message(NOTICE_M, "Hard limit: " + std::to_string(this->hardLimit));
+        message(NOTICE_M, "Hard limit: " + bytesToString(this->hardLimit));
 
         message(NOTICE_M, "Training completed");
         mode = MODE_DEFAULT;
@@ -232,30 +221,25 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
 
         message(NOTICE_M, "Detection will start in " + std::to_string(RESULT_TRAINING_TIME + MAIN_STEP / 1000) + " seconds ...");
 
-        // std::this_thread::sleep_until(timer.getTimeCutoff(STATISTIC_CUTOFF_F));
-        // timer.setTimeCutoff(STATISTIC_CUTOFF_F);
-
         message(NOTICE_M, "Start of detection ...");
         mode = MODE_DETECTION;
 
-        long long previousSmoothedValue = sniffer.getTrafficPerSec();
-        this->smoothedValue = sniffer.getTrafficPerSec();
+        long long previousSmoothedValue = this->mainCentralLine;
+        this->smoothedValue = this->mainCentralLine;
         long long trafficPerSec = 0;
 
         long long windowCentralLine = this->mainCentralLine;
         std::vector<long long> window;
         
         bool interruption = false;
-        int count = 0;
+        long long iterCount = 0;
+        int countWindow = 0;
         int excessCount = 0;
+        long long mainExcessCount = 0;
         
         std::fstream file("debug_files/traffic.txt", std::ios::in);
         std::string s = "";
         message(NOTICE_M, "DEBUG: open debug file");
-        long long iterCount = 0;
-
-        long long uclExcessCount = 0;
-        long long floatExcessCount = 0;
 
         while (!interruption)
         {
@@ -273,16 +257,18 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
                 previousSmoothedValue = this->smoothedValue;
                 this->smoothedValue = this->smoothing(this->smoothingCoeff, trafficPerSec, previousSmoothedValue);
 
-                count++;
-                if (count == this->windowSize)
+                countWindow++;
+                if (countWindow == this->windowSize)
                 {
                         windowCentralLine = this->averaging(window);
 
+                        this->hardLimit = windowCentralLine + 5 * sqrt((this->smoothingCoeff / (2 - this->smoothingCoeff)) * this->standartDeviation);
+
                         window.clear();
-                        count = 0;
+                        countWindow = 0;
                 }
 
-                if (trafficPerSec > windowCentralLine * ((this->sensitivity / 100) + 1))
+                if (this->smoothedValue > this->hardLimit)
                 {
                         excessCount++;
                 }
@@ -290,16 +276,13 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
                 {
                         excessCount = 0;
                 }
-
-                if (trafficPerSec > this->hardLimit || excessCount == this->k)
+                
+                if (excessCount >= this->numOfExcesses)
                 {
-                        uclExcessCount++;
+                        mainExcessCount++;
                         status = STATUS_ALARM;
-                }
-                else if (excessCount == this->k)
-                {
-                        floatExcessCount++;
-                        status = STATUS_ALARM;
+                        message(NOTICE_M, "DEBUG: alarm ucl: " + bytesToString(this->hardLimit));
+                        message(NOTICE_M, "DEBUG: excess count: " + std::to_string(excessCount));
                 }
                 else
                 {
@@ -312,15 +295,14 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
         file.close();
         message(NOTICE_M, "DEBUG: close debug file");
 
+        message(NOTICE_M, "DEBUG: total values: " + std::to_string(this->numberOfPeriods * this->periodLength));
+        message(NOTICE_M, "DEBUG: attacks detected: " + std::to_string(mainExcessCount) + " UCL exceeded");
+
+        float errPercent = (mainExcessCount) * 100 / (float)(this->numberOfPeriods * this->periodLength);
+        message(NOTICE_M, "DEBUG: error percent: " + std::to_string(errPercent) + " %");
+
         message(NOTICE_M, "Detection completed");
         mode = MODE_DEFAULT;
-
-        message(NOTICE_M, "DEBUG: total values: " + std::to_string(this->numberOfPeriods * this->periodLength));
-        message(NOTICE_M, "DEBUG: attacks detected: " + std::to_string(uclExcessCount) + " UCL exceeded");
-        message(NOTICE_M, "DEBUG: attacks detected: " + std::to_string(floatExcessCount) + " float limit exceeded");
-
-        float errPercent = (uclExcessCount + floatExcessCount) * 100 / (float)(this->numberOfPeriods * this->periodLength);
-        message(NOTICE_M, "DEBUG: error percent: " + std::to_string(errPercent) + " %");
 
         interruptFlag = true;
 

@@ -19,7 +19,7 @@ private:
         float smoothingCoeff;
         int windowSize;
         int sensitivity;
-        int k;
+        int numOfExcesses;
         long long mainCentralLine;
         long long standartDeviation;
         long long hardLimit;
