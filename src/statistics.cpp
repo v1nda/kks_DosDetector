@@ -236,6 +236,9 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
         int countWindow = 0;
         int excessCount = 0;
         long long mainExcessCount = 0;
+        long long excessSeconds = 1;
+
+        bool fixingLimit = false;
         
         std::fstream file("debug_files/traffic.txt", std::ios::in);
         std::string s = "";
@@ -258,7 +261,7 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
                 this->smoothedValue = this->smoothing(this->smoothingCoeff, trafficPerSec, previousSmoothedValue);
 
                 countWindow++;
-                if (countWindow == this->windowSize)
+                if (countWindow == this->windowSize && !fixingLimit)
                 {
                         windowCentralLine = this->averaging(window);
 
@@ -277,12 +280,22 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
                         excessCount = 0;
                 }
                 
-                if (excessCount >= this->numOfExcesses)
+                if (excessCount >= this->numOfExcesses && !fixingLimit)
                 {
                         mainExcessCount++;
-                        status = STATUS_ALARM;
-                        message(NOTICE_M, "DEBUG: alarm ucl: " + bytesToString(this->hardLimit));
-                        message(NOTICE_M, "DEBUG: excess count: " + std::to_string(excessCount));
+                        fixingLimit = true;
+                        status = STATUS_WARNING;
+                }
+                else if (excessCount >= this->numOfExcesses && fixingLimit)
+                {
+                        excessSeconds++;
+                }
+                else if (excessCount < this->numOfExcesses && fixingLimit)
+                {
+                        status = STATUS_OK;
+                        fixingLimit = false;
+                        message(NOTICE_M, "DEBUG: excess time: " + std::to_string(excessSeconds) + " sec");
+                        excessSeconds = 0;
                 }
                 else
                 {

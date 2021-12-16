@@ -1,86 +1,95 @@
-[14.12.21 23:57:18] Arguments: device lo
-[14.12.21 23:57:18] Arguments: time of capture 02:00:00
-[14.12.21 23:57:18] Arguments: number of captures 18
-[14.12.21 23:57:18] Timer: start of timer
-[14.12.21 23:57:18] Timer: initialisation completed
-[14.12.21 23:57:18] Sniffer: device: lo
-[14.12.21 23:57:18] Sniffer: filter expression: no filter
-[14.12.21 23:57:18] Sniffer: initialization completed
-[14.12.21 23:57:18] Statistic: initialization completed
-[14.12.21 23:57:19] Start of sniffing ...
-[14.12.21 23:57:20] Start of traffic counting ...
-[14.12.21 23:57:21] Training will start in 5 seconds ...
-[14.12.21 23:57:26] Start of training ...
-[14.12.21 23:57:26] DEBUG: open debug file
-[14.12.21 23:57:26] Start of 1 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 1 capture out of 18 completed
-[14.12.21 23:57:26] Start of 2 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 2 capture out of 18 completed
-[14.12.21 23:57:26] Start of 3 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 3 capture out of 18 completed
-[14.12.21 23:57:26] Start of 4 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 4 capture out of 18 completed
-[14.12.21 23:57:26] Start of 5 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 5 capture out of 18 completed
-[14.12.21 23:57:26] Start of 6 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 6 capture out of 18 completed
-[14.12.21 23:57:26] Start of 7 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 7 capture out of 18 completed
-[14.12.21 23:57:26] Start of 8 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 8 capture out of 18 completed
-[14.12.21 23:57:26] Start of 9 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 9 capture out of 18 completed
-[14.12.21 23:57:26] Start of 10 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 10 capture out of 18 completed
-[14.12.21 23:57:26] Start of 11 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 11 capture out of 18 completed
-[14.12.21 23:57:26] Start of 12 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 12 capture out of 18 completed
-[14.12.21 23:57:26] Start of 13 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 13 capture out of 18 completed
-[14.12.21 23:57:26] Start of 14 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 14 capture out of 18 completed
-[14.12.21 23:57:26] Start of 15 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 15 capture out of 18 completed
-[14.12.21 23:57:26] Start of 16 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 16 capture out of 18 completed
-[14.12.21 23:57:26] Start of 17 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 17 capture out of 18 completed
-[14.12.21 23:57:26] Start of 18 capture out of 18 (02:00:00) ...
-[14.12.21 23:57:26] 18 capture out of 18 completed
-[14.12.21 23:57:26] DEBUG: close debug file
-[14.12.21 23:57:26] Central line: 92.63 KB
-[14.12.21 23:57:26] Smoothing coeffitient: 0.31
-[14.12.21 23:57:26] Floating window size: 5
-[14.12.21 23:57:26] Hard limit: 1.29 MB
-[14.12.21 23:57:26] Training completed
-[14.12.21 23:57:26] Detection will start in 5 seconds ...
-[14.12.21 23:57:26] Start of detection ...
-[14.12.21 23:57:26] DEBUG: open debug file
-[14.12.21 23:57:26] DEBUG: alarm ucl: 1.27 MB
-[14.12.21 23:57:26] DEBUG: excess count: 4
-[14.12.21 23:57:26] DEBUG: alarm ucl: 11.85 MB
-[14.12.21 23:57:26] DEBUG: excess count: 4
-[14.12.21 23:57:26] DEBUG: alarm ucl: 11.16 MB
-[14.12.21 23:57:26] DEBUG: excess count: 4
-[14.12.21 23:57:26] DEBUG: alarm ucl: 8.63 MB
-[14.12.21 23:57:26] DEBUG: excess count: 4
-[14.12.21 23:57:26] DEBUG: alarm ucl: 3.38 MB
-[14.12.21 23:57:26] DEBUG: excess count: 4
-[14.12.21 23:57:26] DEBUG: alarm ucl: 3.38 MB
-[14.12.21 23:57:26] DEBUG: excess count: 4
-[14.12.21 23:57:26] DEBUG: alarm ucl: 3.01 MB
-[14.12.21 23:57:26] DEBUG: excess count: 4
-[14.12.21 23:57:26] DEBUG: close debug file
-[14.12.21 23:57:26] DEBUG: total values: 129600
-[14.12.21 23:57:26] DEBUG: attacks detected: 7 UCL exceeded
-[14.12.21 23:57:26] DEBUG: error percent: 0.005401 %
-[14.12.21 23:57:26] Detection completed
-[14.12.21 23:57:29] End of traffic counting
-[14.12.21 23:57:30] End of sniffing
-[14.12.21 23:57:30] Statistic: end of statistic
-[14.12.21 23:57:30] Sniffer: total processed 0.00 B
-[14.12.21 23:57:30] Sniffer: total processed 0 packets
-[14.12.21 23:57:30] Sniffer: end of sniffer
-[14.12.21 23:57:30] Timer: working time: 00:00:12
-[14.12.21 23:57:30] Timer: end of timer
+[16.12.21 14:56:17] Arguments: device lo
+[16.12.21 14:56:17] Arguments: time of capture 02:00:00
+[16.12.21 14:56:17] Arguments: number of captures 18
+[16.12.21 14:56:17] Timer: start of timer
+[16.12.21 14:56:17] Timer: initialisation completed
+[16.12.21 14:56:17] Sniffer: device: lo
+[16.12.21 14:56:17] Sniffer: filter expression: no filter
+[16.12.21 14:56:17] Sniffer: initialization completed
+[16.12.21 14:56:17] Statistic: initialization completed
+[16.12.21 14:56:18] Start of sniffing ...
+[16.12.21 14:56:20] Start of traffic counting ...
+[16.12.21 14:56:21] Training will start in 5 seconds ...
+[16.12.21 14:56:26] Start of training ...
+[16.12.21 14:56:26] DEBUG: open debug file
+[16.12.21 14:56:26] Start of 1 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 1 capture out of 18 completed
+[16.12.21 14:56:26] Start of 2 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 2 capture out of 18 completed
+[16.12.21 14:56:26] Start of 3 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 3 capture out of 18 completed
+[16.12.21 14:56:26] Start of 4 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 4 capture out of 18 completed
+[16.12.21 14:56:26] Start of 5 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 5 capture out of 18 completed
+[16.12.21 14:56:26] Start of 6 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 6 capture out of 18 completed
+[16.12.21 14:56:26] Start of 7 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 7 capture out of 18 completed
+[16.12.21 14:56:26] Start of 8 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 8 capture out of 18 completed
+[16.12.21 14:56:26] Start of 9 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 9 capture out of 18 completed
+[16.12.21 14:56:26] Start of 10 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 10 capture out of 18 completed
+[16.12.21 14:56:26] Start of 11 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 11 capture out of 18 completed
+[16.12.21 14:56:26] Start of 12 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 12 capture out of 18 completed
+[16.12.21 14:56:26] Start of 13 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 13 capture out of 18 completed
+[16.12.21 14:56:26] Start of 14 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 14 capture out of 18 completed
+[16.12.21 14:56:26] Start of 15 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 15 capture out of 18 completed
+[16.12.21 14:56:26] Start of 16 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 16 capture out of 18 completed
+[16.12.21 14:56:26] Start of 17 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 17 capture out of 18 completed
+[16.12.21 14:56:26] Start of 18 capture out of 18 (02:00:00) ...
+[16.12.21 14:56:26] 18 capture out of 18 completed
+[16.12.21 14:56:26] DEBUG: close debug file
+[16.12.21 14:56:26] Central line: 92.63 KB
+[16.12.21 14:56:26] Smoothing coeffitient: 0.31
+[16.12.21 14:56:26] Floating window size: 5
+[16.12.21 14:56:26] Hard limit: 1.29 MB
+[16.12.21 14:56:26] Training completed
+[16.12.21 14:56:26] Detection will start in 5 seconds ...
+[16.12.21 14:56:26] Start of detection ...
+[16.12.21 14:56:26] DEBUG: open debug file
+[16.12.21 14:56:26] DEBUG: excess time: 50 sec
+[16.12.21 14:56:26] DEBUG: excess time: 41 sec
+[16.12.21 14:56:26] DEBUG: excess time: 1 sec
+[16.12.21 14:56:26] DEBUG: excess time: 0 sec
+[16.12.21 14:56:26] DEBUG: excess time: 71 sec
+[16.12.21 14:56:26] DEBUG: excess time: 55 sec
+[16.12.21 14:56:26] DEBUG: excess time: 131 sec
+[16.12.21 14:56:26] DEBUG: excess time: 3 sec
+[16.12.21 14:56:26] DEBUG: excess time: 17 sec
+[16.12.21 14:56:26] DEBUG: excess time: 30 sec
+[16.12.21 14:56:26] DEBUG: excess time: 13 sec
+[16.12.21 14:56:26] DEBUG: excess time: 93 sec
+[16.12.21 14:56:26] DEBUG: excess time: 40 sec
+[16.12.21 14:56:26] DEBUG: excess time: 42 sec
+[16.12.21 14:56:26] DEBUG: excess time: 41 sec
+[16.12.21 14:56:26] DEBUG: excess time: 127 sec
+[16.12.21 14:56:26] DEBUG: excess time: 1 sec
+[16.12.21 14:56:26] DEBUG: excess time: 48 sec
+[16.12.21 14:56:26] DEBUG: excess time: 7 sec
+[16.12.21 14:56:26] DEBUG: excess time: 7 sec
+[16.12.21 14:56:26] DEBUG: excess time: 45 sec
+[16.12.21 14:56:26] DEBUG: excess time: 3 sec
+[16.12.21 14:56:26] DEBUG: excess time: 24 sec
+[16.12.21 14:56:26] DEBUG: close debug file
+[16.12.21 14:56:26] DEBUG: total values: 129600
+[16.12.21 14:56:26] DEBUG: attacks detected: 23 UCL exceeded
+[16.12.21 14:56:26] DEBUG: error percent: 0.017747 %
+[16.12.21 14:56:26] Detection completed
+[16.12.21 14:56:29] End of traffic counting
+[16.12.21 14:56:30] End of sniffing
+[16.12.21 14:56:30] Statistic: end of statistic
+[16.12.21 14:56:30] Sniffer: total processed 0.00 B
+[16.12.21 14:56:30] Sniffer: total processed 0 packets
+[16.12.21 14:56:30] Sniffer: end of sniffer
+[16.12.21 14:56:30] Timer: working time: 00:00:12
+[16.12.21 14:56:30] Timer: end of timer
