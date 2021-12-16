@@ -62,7 +62,6 @@ void Cgui::printTemplate()
 
 void Cgui::printData(Timer &timer, Sniffer &sniffer, Statistic &statistic)
 {
-        std::string str = "";
 
         this->infoArray[0][1] = sniffer.getDevice();
         this->infoArray[0][3] = timer.getCurrentTime();
@@ -74,18 +73,20 @@ void Cgui::printData(Timer &timer, Sniffer &sniffer, Statistic &statistic)
         this->infoArray[7][2] = packetsToString(sniffer.getPacketsPerSec());
         this->infoArray[10][1] = bytesToString(sniffer.getTrafficPerSec()) + "/sec";
 
-        str = std::to_string(statistic.getSmoothingCoeff());
+        std::string str = std::to_string(statistic.getSmoothingCoeff());
         this->infoArray[10][3] = str.substr(0, str.size() - 4);
         this->infoArray[11][1] = bytesToString(statistic.getSmoothingValue()) + "/sec";
         this->infoArray[11][3] = std::to_string(statistic.getWindowSize());
-        this->infoArray[12][1] = bytesToString(statistic.getHardLimit()) + "/sec";
+        this->infoArray[12][1] = bytesToString(statistic.getLimit()) + "/sec";
 
         for (size_t i = 0; i < this->infoArray.size(); i++)
         {
                 for (size_t j = 0; j < this->infoArray[0].size(); j++)
                 {
                         if (this->infoArray[i][j].size() > (infoColumns[j + 1] - infoColumns[j]))
+                        {
                                 this->infoArray[i][j] = "<err>";
+                        }
                 }
         }
 
@@ -108,13 +109,13 @@ void Cgui::printData(Timer &timer, Sniffer &sniffer, Statistic &statistic)
 
 void Cgui::printGraph(Sniffer &sniffer, Statistic &statistic)
 {
-        const wchar_t *str1 = L"Traffic            ░░░░░";
-        const wchar_t *str2 = L"Smoothed traffic   ▓▓▓▓▓";
-        const wchar_t *str3 = L"Hard limit         ━━━━━";
-        const wchar_t *str4 = L"━";
-        const wchar_t *str5 = L"░";
-        const wchar_t *str6 = L"▓";
-        const std::string str7 = "^";
+        const wchar_t *str1 = GRAPH_SIGN_1;
+        const wchar_t *str2 = GRAPH_SIGN_2;
+        const wchar_t *str3 = GRAPH_SIGN_3;
+        const wchar_t *str4 = GRAPH_SIGN_4;
+        const wchar_t *str5 = GRAPH_SIGN_5;
+        const wchar_t *str6 = GRAPH_SIGN_6;
+        const std::string str7 = GRAPH_SIGN_7;
 
         std::vector<std::vector<int>> graphArray;
         for (int i = 0; i < GRAPH_X_MAX; i++)
@@ -128,9 +129,9 @@ void Cgui::printGraph(Sniffer &sniffer, Statistic &statistic)
                 temp.clear();
         }
 
-        long long hardLimit = 0;
+        long long limit = 0;
         long long traffic = 0;
-        long long smoothedTraffic = 0;
+        long long smoothed = 0;
 
         long long maxValue = 0;
         float rate = 0;
@@ -144,13 +145,13 @@ void Cgui::printGraph(Sniffer &sniffer, Statistic &statistic)
 
         if (mode == MODE_DETECTION)
         {
-                hardLimit = statistic.getHardLimit();
-                smoothedTraffic = statistic.getSmoothingValue();
+                limit = statistic.getLimit();
+                smoothed = statistic.getSmoothingValue();
         }
         else
         {
-                hardLimit = 0;
-                smoothedTraffic = 0;
+                limit = 0;
+                smoothed = 0;
         }
 
         for (int i = 0; i < GRAPH_X_MAX - 1; i++)
@@ -158,9 +159,9 @@ void Cgui::printGraph(Sniffer &sniffer, Statistic &statistic)
                 this->graphValues[i] = this->graphValues[i + 1];
         }
 
-        this->graphValues[GRAPH_X_MAX - 1][0] = hardLimit;
+        this->graphValues[GRAPH_X_MAX - 1][0] = limit;
         this->graphValues[GRAPH_X_MAX - 1][1] = traffic;
-        this->graphValues[GRAPH_X_MAX - 1][2] = smoothedTraffic;
+        this->graphValues[GRAPH_X_MAX - 1][2] = smoothed;
 
         for (int i = GRAPH_X_MAX - ((GRAPH_X_MAX) / ZOOM_RANGE); i < GRAPH_X_MAX; i++)
         {
@@ -291,8 +292,6 @@ void Cgui::printMessages()
 
 Cgui::Cgui()
 {
-        int columnDelta = 0;
-
         setlocale(LC_ALL, "");
 
         initscr();
@@ -320,7 +319,7 @@ Cgui::Cgui()
                 {"Hard limit", "", "", ""},
         };
 
-        columnDelta = (INFOWIN_W - 2 - INFO_WIN_INDENT_LEFT) / this->infoArray[0].size();
+        int columnDelta = (INFOWIN_W - 2 - INFO_WIN_INDENT_LEFT) / this->infoArray[0].size();
         this->infoColumns.push_back(INFO_WIN_INDENT_LEFT);
 
         size_t i = 1;
@@ -389,7 +388,7 @@ void Cgui::renewalCgui(Timer &timer, Sniffer &sniffer, Statistic &statistic)
         
         while (interruptionCounter < NUMBER_CUTOFF_F - CLI_CUTOFF_F)
         {
-                if (interruptFlag)
+                if (interrupt)
                 {
                         interruptionCounter++;
                 }

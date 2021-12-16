@@ -81,7 +81,7 @@ void Message::printToLog()
 
         logPrintMutex.lock();
 
-        log.open("dosdetector.log", std::ios_base::app);
+        log.open(LOG_FILE, std::ios_base::app);
         log << this->messageString << std::endl;
         log.close();
 

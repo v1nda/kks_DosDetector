@@ -210,7 +210,7 @@ void Sniffer::countTraffic(Timer &timer)
 
 	while (interruptionCounter < NUMBER_CUTOFF_F - TRAFFIC_COUNTER_CUTOFF_F)
 	{
-		if (interruptFlag)
+		if (interrupt)
 		{
 			interruptionCounter++;
 		}

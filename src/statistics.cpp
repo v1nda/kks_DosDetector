@@ -1,7 +1,5 @@
 #include "../includes/statistics.h"
 
-#include <fstream>
-
 #include <stdlib.h>
 
 std::string mode = MODE_DEFAULT;
@@ -76,11 +74,12 @@ Statistic::Statistic(int period, int number)
         this->smoothingCoeff = 0;
         this->windowSize = 0;
         this->sensitivity = 30;
-        this->mainCentralLine = 0;
+        this->numberOfExcesses = 0;
+        this->centralLine = 0;
         this->standartDeviation = 0;
-        this->hardLimit = 0;
+        this->limit = 0;
 
-        this->smoothedValue = 0;
+        this->smoothed = 0;
 
         message(NOTICE_M, "Statistic: initialization completed");
 
@@ -99,12 +98,12 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
         std::this_thread::sleep_until(timer.getTimeCutoff(STATISTIC_CUTOFF_F));
         timer.setTimeCutoff(STATISTIC_CUTOFF_F);
 
-        for (int i = 0; i < RESULT_TRAINING_TIME; i++)
+        for (int i = 0; i < WAIT_TRAINING_TIME; i++)
         {
                 timer.setTimeCutoff(STATISTIC_CUTOFF_F);
         }
 
-        message(NOTICE_M, "Training will start in " + std::to_string(RESULT_TRAINING_TIME + MAIN_STEP / 1000) + " seconds ...");
+        message(NOTICE_M, "Training will start in " + std::to_string(WAIT_TRAINING_TIME + MAIN_STEP / 1000) + " seconds ...");
 
         std::this_thread::sleep_until(timer.getTimeCutoff(STATISTIC_CUTOFF_F));
         timer.setTimeCutoff(STATISTIC_CUTOFF_F);
@@ -113,29 +112,20 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
         mode = MODE_TRAINING;
 
         std::vector<long long> fullCapture;
-        std::vector<long long> differentiatedCapture;
+        std::vector<long long> averagingCapture;
 
         std::vector<long long> capture;
-        std::string str = "";
+        std::string str = "--";
 
         for (int i = 0; i < this->numberOfPeriods; i++)
         {
-
-                if (interruptFlag)
-                {
-                        message(NOTICE_M, "Training completed");
-                        mode = MODE_DEFAULT;
-                        return;
-                }
-
-                message(NOTICE_M, "Start of " + std::to_string(i + 1) + " capture out of " + std::to_string(this->numberOfPeriods) +
-                                      " (" + secondsToString(this->periodLength) + ") ...");
+                message(NOTICE_M, "Start of " + std::to_string(i + 1) + " capture out of " + std::to_string(this->numberOfPeriods) + " (" + secondsToString(this->periodLength) + ") ...");
 
                 for (int j = 0; j < this->periodLength; j++)
                 {
-                        if (interruptFlag)
+                        if (interrupt)
                         {
-                                message(NOTICE_M, "Training completed");
+                                message(NOTICE_M, "Training interrupted");
                                 mode = MODE_DEFAULT;
                                 return;
                         }
@@ -150,17 +140,17 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
 
                 message(NOTICE_M, std::to_string(i + 1) + " capture out of " + std::to_string(this->numberOfPeriods) + " completed");
 
-                differentiatedCapture.push_back(this->averaging(capture));
+                averagingCapture.push_back(this->averaging(capture));
 
                 capture.clear();
         }
 
-        this->mainCentralLine = this->averaging(fullCapture);
+        this->centralLine = this->averaging(fullCapture);
 
-        str = bytesToString(mainCentralLine);
+        str = bytesToString(centralLine);
         message(NOTICE_M, "Central line: " + str);
 
-        this->smoothingCoeffCalculation(differentiatedCapture);
+        this->smoothingCoeffCalculation(averagingCapture);
 
         str = std::to_string(this->smoothingCoeff);
         str = str.substr(0, str.size() - 4);
@@ -188,18 +178,18 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
                 std::raise(SIGINT);
         }
 
-        this->k = this->windowSize * 0.7;
-
-        str.clear();
+        this->numberOfExcesses = this->windowSize * PERCENTAGE_FOR_EXCESS;
 
         for (size_t i = 0; i < fullCapture.size(); i++)
         {
-                this->standartDeviation += pow(fullCapture[i] - this->mainCentralLine, 2);
+                this->standartDeviation += pow(fullCapture[i] - this->centralLine, 2);
         }
         this->standartDeviation /= (float)(fullCapture.size());
 
-        this->hardLimit = this->mainCentralLine + 5 * sqrt((this->smoothingCoeff / (2 - this->smoothingCoeff)) * this->standartDeviation);
-        message(NOTICE_M, "Hard limit: " + std::to_string(this->hardLimit));
+        this->limit = this->centralLine + 5 * sqrt((this->smoothingCoeff / (2 - this->smoothingCoeff)) * this->standartDeviation);
+
+        str = bytesToString(this->limit);
+        message(NOTICE_M, "Limit: " + str);
 
         message(NOTICE_M, "Training completed");
         mode = MODE_DEFAULT;
@@ -209,12 +199,12 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
 
 void Statistic::detection(Timer &timer, Sniffer &sniffer)
 {
-        for (int i = 0; i < RESULT_TRAINING_TIME; i++)
+        for (int i = 0; i < WAIT_TRAINING_TIME; i++)
         {
                 timer.setTimeCutoff(STATISTIC_CUTOFF_F);
         }
 
-        message(NOTICE_M, "Detection will start in " + std::to_string(RESULT_TRAINING_TIME + MAIN_STEP / 1000) + " seconds ...");
+        message(NOTICE_M, "Detection will start in " + std::to_string(WAIT_TRAINING_TIME + MAIN_STEP / 1000) + " seconds ...");
 
         std::this_thread::sleep_until(timer.getTimeCutoff(STATISTIC_CUTOFF_F));
         timer.setTimeCutoff(STATISTIC_CUTOFF_F);
@@ -222,32 +212,26 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
         message(NOTICE_M, "Start of detection ...");
         mode = MODE_DETECTION;
 
-        long long previousSmoothedValue = sniffer.getTrafficPerSec();
-        this->smoothedValue = sniffer.getTrafficPerSec();
-        long long trafficPerSec = 0;
+        long long trafficPerSec = sniffer.getTrafficPerSec();
+        long long previousSmoothedValue = trafficPerSec;
+        this->smoothed = trafficPerSec;
 
-        long long windowCentralLine = this->mainCentralLine;
         std::vector<long long> window;
+        long long windowCentralLine = this->centralLine;
         
-        bool interruption = false;
         int count = 0;
         int excessCount = 0;
 
-        while (!interruption)
+        while (!interrupt)
         {
-                if (interruptFlag)
-                {
-                        interruption = !interruption;
-                }
-
                 std::this_thread::sleep_until(timer.getTimeCutoff(STATISTIC_CUTOFF_F));
                 timer.setTimeCutoff(STATISTIC_CUTOFF_F);
 
                 trafficPerSec = sniffer.getTrafficPerSec();
                 window.push_back(trafficPerSec);
 
-                previousSmoothedValue = this->smoothedValue;
-                this->smoothedValue = this->smoothing(this->smoothingCoeff, trafficPerSec, previousSmoothedValue);
+                previousSmoothedValue = this->smoothed;
+                this->smoothed = this->smoothing(this->smoothingCoeff, trafficPerSec, previousSmoothedValue);
 
                 count++;
                 if (count == this->windowSize)
@@ -267,7 +251,7 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
                         excessCount = 0;
                 }
 
-                if (trafficPerSec > this->hardLimit || excessCount == this->k)
+                if (trafficPerSec > this->limit || excessCount == this->numberOfExcesses)
                 {
                         status = STATUS_ALARM;
                         message(ALARM_M, "ATTACK DETECTED");
@@ -284,11 +268,6 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
         return;
 }
 
-long long Statistic::getCentralLine()
-{
-        return this->mainCentralLine;
-}
-
 float Statistic::getSmoothingCoeff()
 {
         return this->smoothingCoeff;
@@ -299,12 +278,12 @@ int Statistic::getWindowSize()
         return this->windowSize;
 }
 
-long long Statistic::getHardLimit()
+long long Statistic::getLimit()
 {
-        return this->hardLimit;
+        return this->limit;
 }
 
 long long Statistic::getSmoothingValue()
 {
-        return this->smoothedValue;
+        return this->smoothed;
 }

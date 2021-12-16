@@ -15,7 +15,7 @@
 
 extern bool initDone;
 extern bool cguiInit;
-extern bool interruptFlag;
+extern bool interrupt;
 
 extern std::string mode;
 extern std::string status;

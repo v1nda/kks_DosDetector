@@ -3,13 +3,9 @@
 
 #include "../includes/sniffer.h"
 
-#define PERCENTAGE_FOR_EXCESS 0.8
+#define PERCENTAGE_FOR_EXCESS 0.7
 
-#define SNIFFING_STATUS "--"
-#define TRAINING_CAPTURE_STATUS "capturing"
-#define TRAINING_CALCULATING_STATUS "calculating"
-
-#define RESULT_TRAINING_TIME 4
+#define WAIT_TRAINING_TIME 4
 
 class Statistic
 {
@@ -19,12 +15,12 @@ private:
         float smoothingCoeff;
         int windowSize;
         int sensitivity;
-        int k;
-        long long mainCentralLine;
+        int numberOfExcesses;
+        long long centralLine;
         long long standartDeviation;
-        long long hardLimit;
+        long long limit;
 
-        long long smoothedValue;
+        long long smoothed;
 
         long long averaging(std::vector<long long> &capture);
         long long smoothing(float smoothingCoeff, long long secondValue, long long firstValue);
@@ -37,10 +33,9 @@ public:
         void training(Timer &timer, Sniffer &sniffer);
         void detection(Timer &timer, Sniffer &sniffer);
 
-        long long getCentralLine();
         float getSmoothingCoeff();
         int getWindowSize();
-        long long getHardLimit();
+        long long getLimit();
 
         long long getSmoothingValue();
 };

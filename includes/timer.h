@@ -22,15 +22,12 @@ class Timer
 {
 private:
         std::time_t timeSystemStartProgram;
+        std::chrono::time_point<std::chrono::steady_clock> timeStartProgram;
         std::chrono::time_point<std::chrono::steady_clock> timeCutoff[NUMBER_CUTOFF_F];
-
-        std::string mode;
-        std::string status;
 
 public:
         Timer();
         ~Timer();
-        std::chrono::time_point<std::chrono::steady_clock> timeStartProgram;
 
         void setTimeStartSniffing();
         void setTimeCutoff(int flag);

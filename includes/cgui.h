@@ -30,6 +30,13 @@
 #define GRAPH_Y_MAX (LINES / 2) - 2 - GRAPH_Y
 
 #define NUMBER_OF_GRAPH_VALUES 3
+#define GRAPH_SIGN_1 L"Traffic            ░░░░░"
+#define GRAPH_SIGN_2 L"Smoothed traffic   ▓▓▓▓▓"
+#define GRAPH_SIGN_3 L"Hard limit         ━━━━━"
+#define GRAPH_SIGN_4 L"━"
+#define GRAPH_SIGN_5 L"░"
+#define GRAPH_SIGN_6 L"▓"
+#define GRAPH_SIGN_7 "^"
 
 #define NUMBER_OF_GRAPH_COORDINATES 5
 

@@ -52,9 +52,6 @@ Timer::Timer()
                 this->timeCutoff[i] = this->timeStartProgram + shift;
         }
 
-        this->mode = MODE_DEFAULT;
-        this->status = STATUS_OK;
-
         message(NOTICE_M, "Timer: initialisation completed");
 
         return;

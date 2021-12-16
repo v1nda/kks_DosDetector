@@ -3,7 +3,7 @@
 #include "../includes/cgui.h"
 
 bool initDone = false;
-bool interruptFlag = false;
+bool interrupt = false;
 
 void interruptHandlingFunc(int signum)
 {
@@ -16,7 +16,7 @@ void interruptHandlingFunc(int signum)
         }
         else
         {
-                interruptFlag = true;
+                interrupt = true;
         }
 
         return;
@@ -26,7 +26,7 @@ void statisticCalculationThreadFunc(Timer &timer, Sniffer &sniffer, Statistic &s
 {
         statistic.training(timer, sniffer);
 
-        if (!interruptFlag)
+        if (!interrupt)
         {
                 statistic.detection(timer, sniffer);
         }

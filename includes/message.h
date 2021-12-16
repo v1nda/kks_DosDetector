@@ -15,6 +15,8 @@
 #define WARNING_M "WARNING"
 #define ALARM_M "ALARM"
 
+#define LOG_FILE "dosdetector.log"
+
 void message(std::string type, std::string text);
 std::vector<std::string> getLastMessages(int number);
 
