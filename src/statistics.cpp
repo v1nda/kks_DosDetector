@@ -63,6 +63,64 @@ void Statistic::smoothingCoeffCalculation(std::vector<long long> &capture)
         return;
 }
 
+void Statistic::anomalyChecking(long long excesses)
+{
+        if (excesses >= this->numberOfExcesses)
+        {
+                if (!this->fixingLimit)
+                {
+                        this->fixingLimit = true;
+                }
+
+                this->excessSeconds++;
+
+                if (status != STATUS_ALARM && this->excessSeconds >= this->alarmTime)
+                {
+                        status = STATUS_ALARM;
+
+                        message(ALARM_M, "Time of exceeding a fixed limit: " + secondsToString(this->excessSeconds));
+
+                        this->anomalysCount++;
+                }
+                else if (status != STATUS_WARNING && this->excessSeconds >= this->warningTime && this->excessSeconds < this->alarmTime)
+                {
+                        status = STATUS_WARNING;
+
+                        message(WARNING_M, "Limit is fixed: " + bytesToString(this->limit));
+                        message(WARNING_M, "Time of exceeding a fixed limit: " + secondsToString(this->excessSeconds));
+                }
+                else if (this->excessSeconds < this->warningTime)
+                {
+                        status = STATUS_OK;
+                }
+        }
+        else if (excesses < this->numberOfExcesses && this->fixingLimit)
+        {
+                if (status == STATUS_ALARM)
+                {
+                        message(NOTICE_M, "Limit released");
+                        message(NOTICE_M, "Duration of anomaly: " + secondsToString(this->excessSeconds));
+                }
+                else if (status == STATUS_WARNING)
+                {
+                        message(NOTICE_M, "Limit released");
+                }
+
+                this->fixingLimit = false;
+
+                if (status == STATUS_ALARM && this->excessSeconds > this->maxExcessSeconds)
+                {
+                        this->maxExcessSeconds = this->excessSeconds;
+                }
+                this->excessSeconds = 0;
+                status = STATUS_OK;
+        }
+        else
+        {
+                status = STATUS_OK;
+        }
+}
+
 /*
         Public methods
 */
@@ -73,13 +131,19 @@ Statistic::Statistic(int period, int number)
         this->numberOfPeriods = number;
         this->smoothingCoeff = 0;
         this->windowSize = 0;
-        this->sensitivity = 30;
         this->numberOfExcesses = 0;
-        this->centralLine = 0;
         this->standartDeviation = 0;
         this->limit = 0;
 
         this->smoothed = 0;
+
+        this->anomalysCount = 0;
+        this->fixingLimit = false;
+        this->excessSeconds = 0;
+        this->maxExcessSeconds = 0;
+
+        this->warningTime = 10;
+        this->alarmTime = 60;
 
         message(NOTICE_M, "Statistic: initialization completed");
 
@@ -145,7 +209,7 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
                 capture.clear();
         }
 
-        this->centralLine = this->averaging(fullCapture);
+        long long centralLine = this->averaging(fullCapture);
 
         str = bytesToString(centralLine);
         message(NOTICE_M, "Central line: " + str);
@@ -158,15 +222,16 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
 
         if (this->smoothingCoeff > 1 || this->smoothingCoeff <= 0)
         {
-                message(ERROR_M, "invalid value of smoothing coeffitient");
+                message(ERROR_M, "Invalid value of smoothing coeffitient");
                 status = STATUS_ERROR;
                 std::raise(SIGINT);
         }
         else if (this->smoothingCoeff >= 0.5)
         {
-                message(WARNING_M, "incorrect calculations are possible, repeat the capture");
+                message(WARNING_M, "Incorrect calculations are possible, repeat the capture");
                 status = STATUS_WARNING;
         }
+        this->smoothingCoeff = 0.3;
 
         this->windowSize = (2 / (this->smoothingCoeff)) - 1;
         message(NOTICE_M, "Floating window size: " + std::to_string(this->windowSize));
@@ -179,17 +244,21 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
         }
 
         this->numberOfExcesses = this->windowSize * PERCENTAGE_FOR_EXCESS;
+        message(NOTICE_M, "Number of exceedances to determine the anomaly: " + std::to_string(this->numberOfExcesses));
+
+        if (this->numberOfExcesses < 1)
+        {
+                message(ERROR_M, "Invalid value of number of exceedance ( < 1)");
+
+                this->numberOfExcesses = 1;
+                message(ERROR_M, "Number of exceedance set is set to: " + std::to_string(this->numberOfExcesses));
+        }
 
         for (size_t i = 0; i < fullCapture.size(); i++)
         {
-                this->standartDeviation += pow(fullCapture[i] - this->centralLine, 2);
+                this->standartDeviation += pow(fullCapture[i] - centralLine, 2);
         }
         this->standartDeviation /= (float)(fullCapture.size());
-
-        this->limit = this->centralLine + 5 * sqrt((this->smoothingCoeff / (2 - this->smoothingCoeff)) * this->standartDeviation);
-
-        str = bytesToString(this->limit);
-        message(NOTICE_M, "Limit: " + str);
 
         message(NOTICE_M, "Training completed");
         mode = MODE_DEFAULT;
@@ -217,10 +286,26 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
         this->smoothed = trafficPerSec;
 
         std::vector<long long> window;
-        long long windowCentralLine = this->centralLine;
+        long long centralLine = 0;
         
-        int count = 0;
+        int windowCount = 0;
         int excessCount = 0;
+
+        for (int i = 0; i < this->windowSize; i++)
+        {
+                std::this_thread::sleep_until(timer.getTimeCutoff(STATISTIC_CUTOFF_F));
+                timer.setTimeCutoff(STATISTIC_CUTOFF_F);
+
+                trafficPerSec = sniffer.getTrafficPerSec();
+                window.push_back(trafficPerSec);
+
+                previousSmoothedValue = this->smoothed;
+                this->smoothed = this->smoothing(this->smoothingCoeff, trafficPerSec, previousSmoothedValue);
+        }
+
+        centralLine = this->averaging(window);
+        this->limit = centralLine + 5 * sqrt((this->smoothingCoeff / (2 - this->smoothingCoeff)) * this->standartDeviation);
+        window.clear();
 
         while (!interrupt)
         {
@@ -233,16 +318,21 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
                 previousSmoothedValue = this->smoothed;
                 this->smoothed = this->smoothing(this->smoothingCoeff, trafficPerSec, previousSmoothedValue);
 
-                count++;
-                if (count == this->windowSize)
+                windowCount++;
+                if (windowCount == this->windowSize)
                 {
-                        windowCentralLine = this->averaging(window);
+                        if (!this->fixingLimit)
+                        {
+                                centralLine = this->averaging(window);
+
+                                this->limit = centralLine + 5 * sqrt((this->smoothingCoeff / (2 - this->smoothingCoeff)) * this->standartDeviation);
+                        }
 
                         window.clear();
-                        count = 0;
+                        windowCount = 0;
                 }
 
-                if (trafficPerSec > windowCentralLine * ((this->sensitivity / 100) + 1))
+                if (this->smoothed > this->limit)
                 {
                         excessCount++;
                 }
@@ -251,19 +341,13 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
                         excessCount = 0;
                 }
 
-                if (trafficPerSec > this->limit || excessCount == this->numberOfExcesses)
-                {
-                        status = STATUS_ALARM;
-                        message(ALARM_M, "ATTACK DETECTED");
-                }
-                else
-                {
-                        status = STATUS_OK;
-                }
+                anomalyChecking(excessCount);
         }
 
         message(NOTICE_M, "Detection completed");
         mode = MODE_DEFAULT;
+
+        message(NOTICE_M, "Number of recodered anomalys " + std::to_string(this->anomalysCount));
 
         return;
 }
@@ -278,12 +362,56 @@ int Statistic::getWindowSize()
         return this->windowSize;
 }
 
+int Statistic::getNumberOfExcesses()
+{
+        return this->numberOfExcesses;
+}
+
+long long Statistic::getWarningTime()
+{
+        return this->warningTime;
+}
+
+long long Statistic::getAlarmTime()
+{
+        return this->alarmTime;
+}
+
+long long Statistic::getSmoothedValue()
+{
+        return this->smoothed;
+}
+
 long long Statistic::getLimit()
 {
         return this->limit;
 }
 
-long long Statistic::getSmoothingValue()
+long long Statistic::getExcessSeconds()
 {
-        return this->smoothed;
+        return this->excessSeconds;
+}
+
+std::string Statistic::getFixingLimit()
+{
+        if (this->fixingLimit)
+        {
+                return "YES";
+        }
+        else
+        {
+                return "NO";
+        }
+
+        return "<err>";
+}
+
+long long Statistic::getAnomalysCount()
+{
+        return this->anomalysCount;
+}
+
+long long Statistic::getMaxAnomalyTime()
+{
+        return this->maxExcessSeconds;
 }

@@ -29,14 +29,13 @@
 #define GRAPH_X_MAX COLS - 2 - (GRAPH_X) - GRAPH_RIGHT_INDENT
 #define GRAPH_Y_MAX (LINES / 2) - 2 - GRAPH_Y
 
+#define COLOR_PAIR_DEFAUT 1
+#define COLOR_PAIR_OK 2
+#define COLOR_PAIR_WARNING 3
+#define COLOR_PAIR_ALARM 4
+#define COLOR_PAIR_HEADER 5
+
 #define NUMBER_OF_GRAPH_VALUES 3
-#define GRAPH_SIGN_1 L"Traffic            ░░░░░"
-#define GRAPH_SIGN_2 L"Smoothed traffic   ▓▓▓▓▓"
-#define GRAPH_SIGN_3 L"Hard limit         ━━━━━"
-#define GRAPH_SIGN_4 L"━"
-#define GRAPH_SIGN_5 L"░"
-#define GRAPH_SIGN_6 L"▓"
-#define GRAPH_SIGN_7 "^"
 
 #define NUMBER_OF_GRAPH_COORDINATES 5
 
@@ -58,6 +57,9 @@ private:
 
         void clearScreen(WINDOW *window, int weight, int height);
         void refreshScreens();
+
+        void colorPrintMessage(std::string message, int x, int y);
+        void colorPrintData(int x, int y);
         
         void printTemplate();
         void printData(Timer &timer, Sniffer &sniffer, Statistic &statistic);

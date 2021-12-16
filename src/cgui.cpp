@@ -30,6 +30,86 @@ void Cgui::refreshScreens()
         return;
 }
 
+void Cgui::colorPrintMessage(std::string message, int x, int y)
+{
+        if (message.find("WARNING") != std::string::npos)
+        {
+                wattron(this->messageWin, COLOR_PAIR(COLOR_PAIR_WARNING));
+                mvwaddstr(this->messageWin, y, x, message.c_str());
+                wattroff(this->messageWin, COLOR_PAIR(COLOR_PAIR_WARNING));
+        }
+        else if (message.find("ALARM") != std::string::npos)
+        {
+                wattron(this->messageWin, COLOR_PAIR(COLOR_PAIR_ALARM));
+                mvwaddstr(this->messageWin, y, x, message.c_str());
+                wattroff(this->messageWin, COLOR_PAIR(COLOR_PAIR_ALARM));
+        }
+        else
+        {
+                mvwaddstr(this->messageWin, y, x, message.c_str());
+        }
+
+        return;
+}
+
+void Cgui::colorPrintData(int x, int y)
+{
+        if (y == 13 && x == 3)
+        {
+                if (status == STATUS_OK)
+                {
+                        wattron(this->infoWin, COLOR_PAIR(COLOR_PAIR_OK) | A_BOLD);
+                        mvwaddstr(this->infoWin, INFO_WIN_INDENT_TOP + y, this->infoColumns[x], this->infoArray[y][x].c_str());
+                        wattroff(this->infoWin, COLOR_PAIR(COLOR_PAIR_OK) | A_BOLD);
+                }
+                else if (status == STATUS_WARNING)
+                {
+                        wattron(this->infoWin, COLOR_PAIR(COLOR_PAIR_WARNING) | A_BOLD);
+                        mvwaddstr(this->infoWin, INFO_WIN_INDENT_TOP + y, this->infoColumns[x], this->infoArray[y][x].c_str());
+                        wattroff(this->infoWin, COLOR_PAIR(COLOR_PAIR_WARNING) | A_BOLD);
+                }
+                else if (status == STATUS_ALARM)
+                {
+                        wattron(this->infoWin, COLOR_PAIR(COLOR_PAIR_ALARM) | A_BOLD);
+                        mvwaddstr(this->infoWin, INFO_WIN_INDENT_TOP + y, this->infoColumns[x], this->infoArray[y][x].c_str());
+                        wattroff(this->infoWin, COLOR_PAIR(COLOR_PAIR_ALARM) | A_BOLD);
+                }
+
+                return;
+        }
+
+        if (y == 8 && x == 3 && this->infoArray[y][x] != "00:00:00")
+        {
+                wattron(this->infoWin, A_UNDERLINE | A_BOLD);
+                mvwaddstr(this->infoWin, INFO_WIN_INDENT_TOP + y, this->infoColumns[x], this->infoArray[y][x].c_str());
+                wattroff(this->infoWin, A_UNDERLINE | A_BOLD);
+
+                return;
+        }
+
+        if (y == 9 && x == 3 && this->infoArray[y][x] == "YES")
+        {
+                wattron(this->infoWin, A_UNDERLINE | A_BOLD);
+                mvwaddstr(this->infoWin, INFO_WIN_INDENT_TOP + y, this->infoColumns[x], this->infoArray[y][x].c_str());
+                wattroff(this->infoWin, A_UNDERLINE | A_BOLD);
+
+                return;
+        }
+
+        if (y == 7 || y == 8 || y == 9 || ((y == 12 || y == 13) && (x == 2 || x == 3)))
+        {
+                wattron(this->infoWin, A_BOLD);
+                mvwaddstr(this->infoWin, INFO_WIN_INDENT_TOP + y, this->infoColumns[x], this->infoArray[y][x].c_str());
+                wattroff(this->infoWin, A_BOLD);
+
+                return;
+        }
+
+        mvwaddstr(this->infoWin, INFO_WIN_INDENT_TOP + y, this->infoColumns[x], this->infoArray[y][x].c_str());
+
+        return;
+}
+
 void Cgui::printTemplate()
 {
         std::string str = "";
@@ -40,12 +120,18 @@ void Cgui::printTemplate()
         box(this->messageWin, 0, 0);
         box(this->graphWin, 0, 0);
 
-        str = "[Main info]";
+        wattron(this->infoWin, COLOR_PAIR(COLOR_PAIR_HEADER));
+        wattron(this->messageWin, COLOR_PAIR(COLOR_PAIR_HEADER));
+        wattron(this->graphWin, COLOR_PAIR(COLOR_PAIR_HEADER));
+        str = "  Main info  ";
         mvwaddstr(this->infoWin, 0, 0, str.c_str());
-        str = "[Messages]";
+        str = "  Messages  ";
         mvwaddstr(this->messageWin, 0, 0, str.c_str());
-        str = "[Graph]";
+        str = "  Graph  ";
         mvwaddstr(this->graphWin, 0, 0, str.c_str());
+        wattroff(this->infoWin, COLOR_PAIR(COLOR_PAIR_HEADER));
+        wattroff(this->messageWin, COLOR_PAIR(COLOR_PAIR_HEADER));
+        wattroff(this->graphWin, COLOR_PAIR(COLOR_PAIR_HEADER));
 
         for (size_t i = 0; i < this->infoArray.size(); i++)
         {
@@ -63,21 +149,31 @@ void Cgui::printTemplate()
 void Cgui::printData(Timer &timer, Sniffer &sniffer, Statistic &statistic)
 {
 
-        this->infoArray[0][1] = sniffer.getDevice();
-        this->infoArray[0][3] = timer.getCurrentTime();
-        this->infoArray[1][3] = timer.getWorkTime();
-        this->infoArray[3][1] = mode;
-        this->infoArray[3][3] = status;
-        this->infoArray[6][0] = bytesToString(sniffer.getTrafficAll());
-        this->infoArray[6][2] = packetsToString(sniffer.getPacketsAll());
-        this->infoArray[7][2] = packetsToString(sniffer.getPacketsPerSec());
-        this->infoArray[10][1] = bytesToString(sniffer.getTrafficPerSec()) + "/sec";
+        this->infoArray[0][1] = timer.getCurrentTime();
+        this->infoArray[1][1] = timer.getWorkTime();
+        this->infoArray[0][3] = sniffer.getDevice();
+        
+        this->infoArray[3][1] = bytesToString(sniffer.getTrafficAll());
+        this->infoArray[4][1] = packetsToString(sniffer.getPacketsAll());
+        this->infoArray[5][1] = packetsToString(sniffer.getPacketsPerSec());
+        
+        this->infoArray[7][1] = bytesToString(sniffer.getTrafficPerSec()) + "/sec";
+        this->infoArray[8][1] = bytesToString(statistic.getSmoothedValue()) + "/sec";
+        this->infoArray[9][1] = bytesToString(statistic.getLimit()) + "/sec";
+        this->infoArray[8][3] = secondsToString(statistic.getExcessSeconds());
+        this->infoArray[9][3] = statistic.getFixingLimit();
 
         std::string str = std::to_string(statistic.getSmoothingCoeff());
-        this->infoArray[10][3] = str.substr(0, str.size() - 4);
-        this->infoArray[11][1] = bytesToString(statistic.getSmoothingValue()) + "/sec";
-        this->infoArray[11][3] = std::to_string(statistic.getWindowSize());
-        this->infoArray[12][1] = bytesToString(statistic.getLimit()) + "/sec";
+        this->infoArray[11][1] = str.substr(0, str.size() - 4);
+        this->infoArray[12][1] = std::to_string(statistic.getWindowSize());
+        this->infoArray[13][1] = std::to_string(statistic.getNumberOfExcesses());
+        this->infoArray[12][3] = mode;
+        this->infoArray[13][3] = status;
+
+        this->infoArray[15][1] = secondsToString(statistic.getWarningTime());
+        this->infoArray[16][1] = secondsToString(statistic.getAlarmTime());
+        this->infoArray[15][3] = std::to_string(statistic.getAnomalysCount());
+        this->infoArray[16][3] = secondsToString(statistic.getMaxAnomalyTime());
 
         for (size_t i = 0; i < this->infoArray.size(); i++)
         {
@@ -98,7 +194,7 @@ void Cgui::printData(Timer &timer, Sniffer &sniffer, Statistic &statistic)
         {
                 for (size_t j = 0; j < this->infoArray[0].size(); j++)
                 {
-                        mvwaddstr(this->infoWin, INFO_WIN_INDENT_TOP + i, this->infoColumns[j], this->infoArray[i][j].c_str());
+                        this->colorPrintData(j, i);
                 }
         }
 
@@ -109,13 +205,13 @@ void Cgui::printData(Timer &timer, Sniffer &sniffer, Statistic &statistic)
 
 void Cgui::printGraph(Sniffer &sniffer, Statistic &statistic)
 {
-        const wchar_t *str1 = GRAPH_SIGN_1;
-        const wchar_t *str2 = GRAPH_SIGN_2;
-        const wchar_t *str3 = GRAPH_SIGN_3;
-        const wchar_t *str4 = GRAPH_SIGN_4;
-        const wchar_t *str5 = GRAPH_SIGN_5;
-        const wchar_t *str6 = GRAPH_SIGN_6;
-        const std::string str7 = GRAPH_SIGN_7;
+        const wchar_t *str1 = L"Traffic            ░░░░░";
+        const wchar_t *str2 = L"Smoothed traffic   ▓▓▓▓▓";
+        const wchar_t *str3 = L"Hard limit         ━━━━━";
+        const wchar_t *str4 = L"━";
+        const wchar_t *str5 = L"░";
+        const wchar_t *str6 = L"▓";
+        const std::string str7 = "^";
 
         std::vector<std::vector<int>> graphArray;
         for (int i = 0; i < GRAPH_X_MAX; i++)
@@ -146,7 +242,7 @@ void Cgui::printGraph(Sniffer &sniffer, Statistic &statistic)
         if (mode == MODE_DETECTION)
         {
                 limit = statistic.getLimit();
-                smoothed = statistic.getSmoothingValue();
+                smoothed = statistic.getSmoothedValue();
         }
         else
         {
@@ -276,7 +372,7 @@ void Cgui::printMessages()
 
         for (int i = 0; i < MESSAGEWIN_H - 2; i++)
         {
-                mvwaddstr(this->messageWin, 1 + i, 1, lastMessages[i].c_str());
+                this->colorPrintMessage(lastMessages[i], 1, 1 + i);
         }
 
         cliMutex.unlock();
@@ -298,25 +394,38 @@ Cgui::Cgui()
         curs_set(0);
         noecho();
 
+        start_color();
+        use_default_colors();
+
+        init_pair(COLOR_PAIR_DEFAUT, -1, -1);
+        init_pair(COLOR_PAIR_OK, COLOR_GREEN, -1);
+        init_pair(COLOR_PAIR_WARNING, COLOR_YELLOW, -1);
+        init_pair(COLOR_PAIR_ALARM, COLOR_RED, -1);
+        init_pair(COLOR_PAIR_HEADER, COLOR_BLACK, COLOR_WHITE);
+
         this->infoWin = newwin(INFOWIN_H, INFOWIN_W, INFOWIN_Y, INFOWIN_X);
         this->messageWin = newwin(MESSAGEWIN_H, MESSAGEWIN_W, MESSAGEWIN_Y, MESSAGEWIN_X);
         this->graphWin = newwin(GRAPHWIN_H, GRAPHWIN_W, GRAPHWIN_Y, GRAPHWIN_X);
 
         this->infoArray =
         {
-                {"Device", "", "Time", ""},
-                {"", "", "Work time", ""},
+                {"Time", "", "Interface", ""},
+                {"Work time", "", "", ""},
                 {"", "", "", ""},
-                {"Mode", "", "Status", ""},
+                {"All traffic", "", "", ""},
+                {"All packets", "", "", ""},
+                {"Packets per sec", "", "", ""},
                 {"", "", "", ""},
+                {"Current traffic", "", "", ""},
+                {"Smoothed traffic", "", "Excess seconds", ""},
+                {"Limit", "", "Fixing limit", ""},
                 {"", "", "", ""},
-                {"", "(all traffic)", "", "(all packets)"},
-                {"", "", "", "(packets per sec)"},
+                {"Smoothing coef.", "", "", ""},
+                {"Float window size", "", "Mode", ""},
+                {"Number of excesses", "", "Status", ""},
                 {"", "", "", ""},
-                {"", "", "", ""},
-                {"Current traffic", "", "Smoothing coef.", ""},
-                {"Smoothed traffic", "", "Float window", ""},
-                {"Hard limit", "", "", ""},
+                {"Warning reaction time", "", "Total detected anomalys", ""},
+                {"Alarm reaction time", "", "Max anomaly time", ""}
         };
 
         int columnDelta = (INFOWIN_W - 2 - INFO_WIN_INDENT_LEFT) / this->infoArray[0].size();

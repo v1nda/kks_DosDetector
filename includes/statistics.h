@@ -14,17 +14,25 @@ private:
         int numberOfPeriods;
         float smoothingCoeff;
         int windowSize;
-        int sensitivity;
         int numberOfExcesses;
-        long long centralLine;
         long long standartDeviation;
         long long limit;
 
         long long smoothed;
 
+        long long anomalysCount;
+        bool fixingLimit;
+        long long excessSeconds;
+        long long maxExcessSeconds;
+
+        long long warningTime;
+        long long alarmTime;
+
         long long averaging(std::vector<long long> &capture);
         long long smoothing(float smoothingCoeff, long long secondValue, long long firstValue);
         void smoothingCoeffCalculation(std::vector<long long> &capture);
+
+        void anomalyChecking(long long excesses);
 
 public:
         Statistic(int periodLength, int numberOfPeriods);
@@ -35,9 +43,17 @@ public:
 
         float getSmoothingCoeff();
         int getWindowSize();
-        long long getLimit();
+        int getNumberOfExcesses();
+        long long getWarningTime();
+        long long getAlarmTime();
 
-        long long getSmoothingValue();
+        long long getSmoothedValue();
+        long long getLimit();
+        long long getExcessSeconds();
+        std::string getFixingLimit();
+        long long getAnomalysCount();
+        long long getMaxAnomalyTime();
+
 };
 
 #endif
