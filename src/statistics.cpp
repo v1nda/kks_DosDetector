@@ -1,6 +1,7 @@
 #include "../includes/statistics.h"
 
 #include <stdlib.h>
+#include <algorithm>
 
 std::string mode = MODE_DEFAULT;
 std::string status = STATUS_OK;
@@ -125,10 +126,14 @@ void Statistic::anomalyChecking(long long excesses)
         Public methods
 */
 
-Statistic::Statistic(int period, int number)
+Statistic::Statistic(int period, int number, long long warning, long long alarm, bool analysis)
 {
         this->periodLength = period;
         this->numberOfPeriods = number;
+        this->analysisFlag = analysis;
+        this->warningTime = warning;
+        this->alarmTime = alarm;
+
         this->smoothingCoeff = 0;
         this->windowSize = 0;
         this->numberOfExcesses = 0;
@@ -142,9 +147,6 @@ Statistic::Statistic(int period, int number)
         this->excessSeconds = 0;
         this->maxExcessSeconds = 0;
 
-        this->warningTime = 10;
-        this->alarmTime = 60;
-
         message(NOTICE_M, "Statistic: initialization completed");
 
         return;
@@ -153,6 +155,158 @@ Statistic::Statistic(int period, int number)
 Statistic::~Statistic()
 {
         message(NOTICE_M, "Statistic: end of statistic");
+
+        return;
+}
+
+void Statistic::analysis(Timer &timer, std::vector<long long> &trainingCapture)
+{
+        message(NOTICE_M, "Start of analysing capture ...");
+
+        if ((int)trainingCapture.size() <= this->windowSize + 1)
+        {
+                status = STATUS_WARNING;
+                message(WARNING_M, "Training capture size is too small. Using defaults values");
+                message(WARNING_M, "Analisys interrupted");
+                return;
+        }
+
+        std::this_thread::sleep_until(timer.getTimeCutoff(STATISTIC_CUTOFF_F));
+
+        for (int i = 0; i < ANALISYS_TIME; i++)
+        {
+                timer.setTimeCutoff(STATISTIC_CUTOFF_F);
+        }
+
+        
+        std::vector<long long> anomalyDurings;
+
+        long long trafficPerSec = trainingCapture[0];
+        long long previousSmoothedValue = trafficPerSec;
+        this->smoothed = trafficPerSec;
+
+        std::vector<long long> window;
+        long long centralLine = 0;
+        
+        int windowCount = 0;
+        int excessCount = 0;
+
+        for (int i = 1; i < this->windowSize + 1; i++)
+        {
+                trafficPerSec = trainingCapture[i];
+                window.push_back(trafficPerSec);
+
+                previousSmoothedValue = this->smoothed;
+                this->smoothed = this->smoothing(this->smoothingCoeff, trafficPerSec, previousSmoothedValue);
+        }
+
+        centralLine = this->averaging(window);
+        this->limit = centralLine + 5 * sqrt((this->smoothingCoeff / (2 - this->smoothingCoeff)) * this->standartDeviation);
+        window.clear();
+
+        for (size_t i = this->windowSize + 1; i < trainingCapture.size(); i++)
+        {
+                trafficPerSec = trainingCapture[i];
+                window.push_back(trafficPerSec);
+
+                previousSmoothedValue = this->smoothed;
+                this->smoothed = this->smoothing(this->smoothingCoeff, trafficPerSec, previousSmoothedValue);
+
+                windowCount++;
+                if (windowCount == this->windowSize)
+                {
+                        if (!this->fixingLimit)
+                        {
+                                centralLine = this->averaging(window);
+
+                                this->limit = centralLine + 5 * sqrt((this->smoothingCoeff / (2 - this->smoothingCoeff)) * this->standartDeviation);
+                        }
+
+                        window.clear();
+                        windowCount = 0;
+                }
+
+                if (this->smoothed > this->limit)
+                {
+                        excessCount++;
+                }
+                else
+                {
+                        excessCount = 0;
+                }
+
+                if (excessCount >= this->numberOfExcesses)
+                {
+                        if (!this->fixingLimit)
+                        {
+                                this->fixingLimit = true;
+                        }
+
+                        this->excessSeconds++;
+                }
+                else if (excessCount < this->numberOfExcesses && this->fixingLimit)
+                {
+                        this->fixingLimit = false;
+                        anomalyDurings.push_back(this->excessSeconds);
+                        this->excessSeconds = 0;
+                }
+        }
+
+        std::sort(anomalyDurings.begin(), anomalyDurings.end());
+
+        long long warning = 0;
+        long long alarm = 0;
+        if (anomalyDurings.size() == 1)
+        {
+                warning = (int)round(anomalyDurings[0] * WARNING_DURING);
+                alarm = anomalyDurings[0];
+        }
+        else if (anomalyDurings.size() > 1)
+        {
+                warning = anomalyDurings[(int)round(anomalyDurings.size() * 0.6) - 1];
+                alarm = anomalyDurings[anomalyDurings.size() - 1];
+        }
+
+        if (anomalyDurings.size() == 0)
+        {
+                message(NOTICE_M, "No anomalys found. Using default values");
+        }
+        else
+        {
+                if (warning > 60)
+                {
+                        this->warningTime = 60 - (warning % 60) + warning;
+                }
+                else if (warning % 60 == 0)
+                {
+                        this->warningTime = warning;
+                }
+                else
+                {
+                        this->warningTime = 10 - (warning % 10) + warning;
+                }
+
+                if (alarm > 60)
+                {
+                        this->alarmTime = 60 - (alarm % 60) + alarm;
+                }
+                else if (alarm % 60 == 0)
+                {
+                        this->alarmTime = alarm;
+                }
+                else
+                {
+                        this->alarmTime = 10 - (alarm % 10) + alarm;
+                }
+        }
+
+        message(NOTICE_M, "Warning reaction time: " + secondsToString(this->warningTime));
+        message(NOTICE_M, "Alarm reaction time: " + secondsToString(this->alarmTime));
+
+        this->excessSeconds = 0;
+        this->fixingLimit = false;
+
+        message(NOTICE_M, "Analisys complete");
 
         return;
 }
@@ -231,7 +385,6 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
                 message(WARNING_M, "Incorrect calculations are possible, repeat the capture");
                 status = STATUS_WARNING;
         }
-        this->smoothingCoeff = 0.3;
 
         this->windowSize = (2 / (this->smoothingCoeff)) - 1;
         message(NOTICE_M, "Floating window size: " + std::to_string(this->windowSize));
@@ -260,6 +413,11 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
         }
         this->standartDeviation /= (float)(fullCapture.size());
 
+        if (this->analysisFlag)
+        {
+                this->analysis(timer, fullCapture);
+        }
+
         message(NOTICE_M, "Training completed");
         mode = MODE_DEFAULT;
 
@@ -268,6 +426,8 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
 
 void Statistic::detection(Timer &timer, Sniffer &sniffer)
 {
+        std::this_thread::sleep_until(timer.getTimeCutoff(STATISTIC_CUTOFF_F));
+
         for (int i = 0; i < WAIT_TRAINING_TIME; i++)
         {
                 timer.setTimeCutoff(STATISTIC_CUTOFF_F);

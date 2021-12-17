@@ -5,13 +5,20 @@
 
 #define PERCENTAGE_FOR_EXCESS 0.7
 
+#define WARNING_DURING 0.6
+
 #define WAIT_TRAINING_TIME 4
+#define ANALISYS_TIME 5
 
 class Statistic
 {
 private:
         int periodLength;
         int numberOfPeriods;
+        bool analysisFlag;
+        long long warningTime;
+        long long alarmTime;
+
         float smoothingCoeff;
         int windowSize;
         int numberOfExcesses;
@@ -25,9 +32,6 @@ private:
         long long excessSeconds;
         long long maxExcessSeconds;
 
-        long long warningTime;
-        long long alarmTime;
-
         long long averaging(std::vector<long long> &capture);
         long long smoothing(float smoothingCoeff, long long secondValue, long long firstValue);
         void smoothingCoeffCalculation(std::vector<long long> &capture);
@@ -35,9 +39,10 @@ private:
         void anomalyChecking(long long excesses);
 
 public:
-        Statistic(int periodLength, int numberOfPeriods);
+        Statistic(int periodLength, int numberOfPeriods, long long warningTime, long long alarmTime, bool analysis);
         ~Statistic();
 
+        void analysis(Timer &timer, std::vector<long long> &trainingCapture);
         void training(Timer &timer, Sniffer &sniffer);
         void detection(Timer &timer, Sniffer &sniffer);
 
