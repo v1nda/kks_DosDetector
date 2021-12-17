@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <algorithm>
 
+#include <fstream>
+
 std::string mode = MODE_DEFAULT;
 std::string status = STATUS_OK;
 
@@ -64,7 +66,7 @@ void Statistic::smoothingCoeffCalculation(std::vector<long long> &capture)
         return;
 }
 
-void Statistic::anomalyChecking(long long excesses)
+void Statistic::anomalyChecking(long long excesses, long long traffic)
 {
         if (excesses >= this->numberOfExcesses)
         {
@@ -74,6 +76,11 @@ void Statistic::anomalyChecking(long long excesses)
                 }
 
                 this->excessSeconds++;
+                if (traffic > this->maxAnomalyTraffic)
+                {
+                        this->maxAnomalyTraffic = traffic;
+                }
+                this->averageAnomalyTraffic += traffic;
 
                 if (status != STATUS_ALARM && this->excessSeconds >= this->alarmTime)
                 {
@@ -97,15 +104,14 @@ void Statistic::anomalyChecking(long long excesses)
         }
         else if (excesses < this->numberOfExcesses && this->fixingLimit)
         {
-                if (status == STATUS_ALARM)
-                {
-                        message(NOTICE_M, "Limit released");
-                        message(NOTICE_M, "Duration of anomaly: " + secondsToString(this->excessSeconds));
-                }
-                else if (status == STATUS_WARNING)
-                {
-                        message(NOTICE_M, "Limit released");
-                }
+                message(NOTICE_M, "Limit released");
+
+                message(NOTICE_M, "Duration of anomaly: " + secondsToString(this->excessSeconds));
+
+                message(NOTICE_M, "Max anomaly traffic: " + bytesToString(this->maxAnomalyTraffic) + "/sec");
+
+                this->averageAnomalyTraffic /= this->excessSeconds;
+                message(NOTICE_M, "Average anomaly traffic: " + bytesToString(this->averageAnomalyTraffic) + "/sec");
 
                 this->fixingLimit = false;
 
@@ -113,7 +119,10 @@ void Statistic::anomalyChecking(long long excesses)
                 {
                         this->maxExcessSeconds = this->excessSeconds;
                 }
+
                 this->excessSeconds = 0;
+                this->maxAnomalyTraffic = 0;
+                this->averageAnomalyTraffic = 0;
                 status = STATUS_OK;
         }
         else
@@ -146,6 +155,8 @@ Statistic::Statistic(int period, int number, long long warning, long long alarm,
         this->fixingLimit = false;
         this->excessSeconds = 0;
         this->maxExcessSeconds = 0;
+        this->maxAnomalyTraffic = 0;
+        this->averageAnomalyTraffic = 0;
 
         message(NOTICE_M, "Statistic: initialization completed");
 
@@ -335,6 +346,10 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
         std::vector<long long> capture;
         std::string str = "--";
 
+        std::fstream file("debug_files/traffic.txt", std::ios::in);
+        std::string s = "";
+        message(NOTICE_M, "DEBUG: open debug file");
+
         for (int i = 0; i < this->numberOfPeriods; i++)
         {
                 message(NOTICE_M, "Start of " + std::to_string(i + 1) + " capture out of " + std::to_string(this->numberOfPeriods) + " (" + secondsToString(this->periodLength) + ") ...");
@@ -348,12 +363,11 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
                                 return;
                         }
 
-                        std::this_thread::sleep_until(timer.getTimeCutoff(STATISTIC_CUTOFF_F));
-                        timer.setTimeCutoff(STATISTIC_CUTOFF_F);
-
-                        long long bytes = sniffer.getTrafficPerSec();
-                        capture.push_back(bytes);
-                        fullCapture.push_back(bytes);
+                        if (std::getline(file, s))
+                        {
+                                capture.push_back(atoi(s.c_str()));
+                                fullCapture.push_back(atoi(s.c_str()));
+                        }
                 }
 
                 message(NOTICE_M, std::to_string(i + 1) + " capture out of " + std::to_string(this->numberOfPeriods) + " completed");
@@ -362,6 +376,9 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
 
                 capture.clear();
         }
+
+        file.close();
+        message(NOTICE_M, "DEBUG: close debug file");
 
         long long centralLine = this->averaging(fullCapture);
 
@@ -441,7 +458,15 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
         message(NOTICE_M, "Start of detection ...");
         mode = MODE_DETECTION;
 
-        long long trafficPerSec = sniffer.getTrafficPerSec();
+        std::fstream file("debug_files/traffic.txt", std::ios::in);
+        std::string s = "";
+        message(NOTICE_M, "DEBUG: open debug file");
+
+        long long trafficPerSec = 0;
+        if (std::getline(file, s))
+        {
+                trafficPerSec = atoi(s.c_str());
+        }
         long long previousSmoothedValue = trafficPerSec;
         this->smoothed = trafficPerSec;
 
@@ -453,11 +478,11 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
 
         for (int i = 0; i < this->windowSize; i++)
         {
-                std::this_thread::sleep_until(timer.getTimeCutoff(STATISTIC_CUTOFF_F));
-                timer.setTimeCutoff(STATISTIC_CUTOFF_F);
-
-                trafficPerSec = sniffer.getTrafficPerSec();
-                window.push_back(trafficPerSec);
+                if (std::getline(file, s))
+                {
+                        trafficPerSec = atoi(s.c_str());
+                        window.push_back(trafficPerSec);
+                }
 
                 previousSmoothedValue = this->smoothed;
                 this->smoothed = this->smoothing(this->smoothingCoeff, trafficPerSec, previousSmoothedValue);
@@ -467,13 +492,15 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
         this->limit = centralLine + 5 * sqrt((this->smoothingCoeff / (2 - this->smoothingCoeff)) * this->standartDeviation);
         window.clear();
 
-        while (!interrupt)
-        {
-                std::this_thread::sleep_until(timer.getTimeCutoff(STATISTIC_CUTOFF_F));
-                timer.setTimeCutoff(STATISTIC_CUTOFF_F);
+        int iterCount = this->windowSize + 1;
 
-                trafficPerSec = sniffer.getTrafficPerSec();
-                window.push_back(trafficPerSec);
+        while (iterCount < this->periodLength * this->numberOfPeriods)
+        {
+                if (std::getline(file, s))
+                {
+                        trafficPerSec = atoi(s.c_str());
+                        window.push_back(trafficPerSec);
+                }
 
                 previousSmoothedValue = this->smoothed;
                 this->smoothed = this->smoothing(this->smoothingCoeff, trafficPerSec, previousSmoothedValue);
@@ -501,8 +528,14 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
                         excessCount = 0;
                 }
 
-                anomalyChecking(excessCount);
+                anomalyChecking(excessCount, trafficPerSec);
+
+                iterCount++;
         }
+
+        file.close();
+        message(NOTICE_M, "DEBUG: close debug file");
+        interrupt = true;
 
         message(NOTICE_M, "Detection completed");
         mode = MODE_DEFAULT;

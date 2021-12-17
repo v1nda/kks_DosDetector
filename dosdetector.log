@@ -1,0 +1,93 @@
+[17.12.21 04:25:19] Arguments: device enp3s0
+[17.12.21 04:25:19] Arguments: time of capture 02:00:00
+[17.12.21 04:25:19] Arguments: number of captures 18
+[17.12.21 04:25:19] Arguments: warning reaction time 60
+[17.12.21 04:25:19] Arguments: alarm reaction time 180
+[17.12.21 04:25:19] Arguments: analysis of training capture 1
+[17.12.21 04:25:19] Timer: start of timer
+[17.12.21 04:25:19] Timer: initialisation completed
+[17.12.21 04:25:19] CGUI: initialisation completed
+[17.12.21 04:25:19] Sniffer: device: enp3s0
+[17.12.21 04:25:19] Sniffer: filter expression: no filter
+[17.12.21 04:25:19] Sniffer: initialization completed
+[17.12.21 04:25:19] Statistic: initialization completed
+[17.12.21 04:25:19] Start of console interface ...
+[17.12.21 04:25:20] Start of sniffing ...
+[17.12.21 04:25:22] Start of traffic counting ...
+[17.12.21 04:25:23] Training will start in 5 seconds ...
+[17.12.21 04:25:28] Start of training ...
+[17.12.21 04:25:28] DEBUG: open debug file
+[17.12.21 04:25:28] Start of 1 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 1 capture out of 18 completed
+[17.12.21 04:25:28] Start of 2 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 2 capture out of 18 completed
+[17.12.21 04:25:28] Start of 3 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 3 capture out of 18 completed
+[17.12.21 04:25:28] Start of 4 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 4 capture out of 18 completed
+[17.12.21 04:25:28] Start of 5 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 5 capture out of 18 completed
+[17.12.21 04:25:28] Start of 6 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 6 capture out of 18 completed
+[17.12.21 04:25:28] Start of 7 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 7 capture out of 18 completed
+[17.12.21 04:25:28] Start of 8 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 8 capture out of 18 completed
+[17.12.21 04:25:28] Start of 9 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 9 capture out of 18 completed
+[17.12.21 04:25:28] Start of 10 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 10 capture out of 18 completed
+[17.12.21 04:25:28] Start of 11 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 11 capture out of 18 completed
+[17.12.21 04:25:28] Start of 12 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 12 capture out of 18 completed
+[17.12.21 04:25:28] Start of 13 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 13 capture out of 18 completed
+[17.12.21 04:25:28] Start of 14 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 14 capture out of 18 completed
+[17.12.21 04:25:28] Start of 15 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 15 capture out of 18 completed
+[17.12.21 04:25:28] Start of 16 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 16 capture out of 18 completed
+[17.12.21 04:25:28] Start of 17 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 17 capture out of 18 completed
+[17.12.21 04:25:28] Start of 18 capture out of 18 (02:00:00) ...
+[17.12.21 04:25:28] 18 capture out of 18 completed
+[17.12.21 04:25:28] DEBUG: close debug file
+[17.12.21 04:25:28] Central line: 92,63 KB
+[17.12.21 04:25:28] Smoothing coeffitient: 0,31
+[17.12.21 04:25:28] Floating window size: 5
+[17.12.21 04:25:28] Number of exceedances to determine the anomaly: 3
+[17.12.21 04:25:28] Start of analysing capture ...
+[17.12.21 04:25:29] Warning reaction time: 00:00:50
+[17.12.21 04:25:29] Alarm reaction time: 00:03:00
+[17.12.21 04:25:29] Analisys complete
+[17.12.21 04:25:29] Training completed
+[17.12.21 04:25:34] Detection will start in 5 seconds ...
+[17.12.21 04:25:38] Start of detection ...
+[17.12.21 04:25:38] DEBUG: open debug file
+[17.12.21 04:25:38] WARNING: Limit is fixed: 4,52 MB
+[17.12.21 04:25:38] WARNING: Time of exceeding a fixed limit: 00:00:50
+[17.12.21 04:25:38] Limit released
+[17.12.21 04:25:38] Duration of anomaly: 00:00:53
+[17.12.21 04:25:38] Max anomaly traffic: 15,36 MB/sec
+[17.12.21 04:25:38] Average anomaly traffic: 7,39 MB/sec
+[17.12.21 04:25:38] WARNING: Limit is fixed: 1,76 MB
+[17.12.21 04:25:38] WARNING: Time of exceeding a fixed limit: 00:00:50
+[17.12.21 04:25:38] Limit released
+[17.12.21 04:25:38] Duration of anomaly: 00:02:01
+[17.12.21 04:25:38] Max anomaly traffic: 15,92 MB/sec
+[17.12.21 04:25:38] Average anomaly traffic: 6,35 MB/sec
+[17.12.21 04:25:38] DEBUG: close debug file
+[17.12.21 04:25:38] Detection completed
+[17.12.21 04:25:38] Number of recodered anomalys 0
+[17.12.21 04:25:41] End of traffic counting
+[17.12.21 04:25:42] End of sniffing
+[17.12.21 04:25:42] End of console interface
+[17.12.21 04:25:44] Statistic: end of statistic
+[17.12.21 04:25:44] Sniffer: total processed 68,39 KB
+[17.12.21 04:25:44] Sniffer: total processed 66 packets
+[17.12.21 04:25:44] Sniffer: end of sniffer
+[17.12.21 04:25:44] CGUI: end of CGUI
+[17.12.21 04:25:44] Timer: working time: 00:00:25
+[17.12.21 04:25:44] Timer: end of timer
