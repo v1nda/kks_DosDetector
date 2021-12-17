@@ -31,12 +31,14 @@ private:
         bool fixingLimit;
         long long excessSeconds;
         long long maxExcessSeconds;
+        long long maxAnomalyTraffic;
+        long long averageAnomalyTraffic;
 
         long long averaging(std::vector<long long> &capture);
         long long smoothing(float smoothingCoeff, long long secondValue, long long firstValue);
         void smoothingCoeffCalculation(std::vector<long long> &capture);
 
-        void anomalyChecking(long long excesses);
+        void anomalyChecking(long long excesses, long long traffic);
 
 public:
         Statistic(int periodLength, int numberOfPeriods, long long warningTime, long long alarmTime, bool analysis);

@@ -64,7 +64,7 @@ void Statistic::smoothingCoeffCalculation(std::vector<long long> &capture)
         return;
 }
 
-void Statistic::anomalyChecking(long long excesses)
+void Statistic::anomalyChecking(long long excesses, long long traffic)
 {
         if (excesses >= this->numberOfExcesses)
         {
@@ -74,6 +74,11 @@ void Statistic::anomalyChecking(long long excesses)
                 }
 
                 this->excessSeconds++;
+                if (traffic > this->maxAnomalyTraffic)
+                {
+                        this->maxAnomalyTraffic = traffic;
+                }
+                this->averageAnomalyTraffic += traffic;
 
                 if (status != STATUS_ALARM && this->excessSeconds >= this->alarmTime)
                 {
@@ -97,15 +102,14 @@ void Statistic::anomalyChecking(long long excesses)
         }
         else if (excesses < this->numberOfExcesses && this->fixingLimit)
         {
-                if (status == STATUS_ALARM)
-                {
-                        message(NOTICE_M, "Limit released");
-                        message(NOTICE_M, "Duration of anomaly: " + secondsToString(this->excessSeconds));
-                }
-                else if (status == STATUS_WARNING)
-                {
-                        message(NOTICE_M, "Limit released");
-                }
+                message(NOTICE_M, "Limit released");
+
+                message(NOTICE_M, "Duration of anomaly: " + secondsToString(this->excessSeconds));
+
+                message(NOTICE_M, "Max anomaly traffic: " + bytesToString(this->maxAnomalyTraffic) + "/sec");
+
+                this->averageAnomalyTraffic /= this->excessSeconds;
+                message(NOTICE_M, "Average anomaly traffic: " + bytesToString(this->averageAnomalyTraffic) + "/sec");
 
                 this->fixingLimit = false;
 
@@ -113,7 +117,10 @@ void Statistic::anomalyChecking(long long excesses)
                 {
                         this->maxExcessSeconds = this->excessSeconds;
                 }
+
                 this->excessSeconds = 0;
+                this->maxAnomalyTraffic = 0;
+                this->averageAnomalyTraffic = 0;
                 status = STATUS_OK;
         }
         else
@@ -146,6 +153,8 @@ Statistic::Statistic(int period, int number, long long warning, long long alarm,
         this->fixingLimit = false;
         this->excessSeconds = 0;
         this->maxExcessSeconds = 0;
+        this->maxAnomalyTraffic = 0;
+        this->averageAnomalyTraffic = 0;
 
         message(NOTICE_M, "Statistic: initialization completed");
 
@@ -501,7 +510,7 @@ void Statistic::detection(Timer &timer, Sniffer &sniffer)
                         excessCount = 0;
                 }
 
-                anomalyChecking(excessCount);
+                anomalyChecking(excessCount, trafficPerSec);
         }
 
         message(NOTICE_M, "Detection completed");
