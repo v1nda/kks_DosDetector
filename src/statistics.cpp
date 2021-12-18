@@ -102,14 +102,17 @@ void Statistic::anomalyChecking(long long excesses, long long traffic)
         }
         else if (excesses < this->numberOfExcesses && this->fixingLimit)
         {
-                message(NOTICE_M, "Limit released");
+                if (status == STATUS_ALARM || status == STATUS_WARNING)
+                {
+                        message(NOTICE_M, "Limit released");
 
-                message(NOTICE_M, "Duration of anomaly: " + secondsToString(this->excessSeconds));
+                        message(NOTICE_M, "Duration of anomaly: " + secondsToString(this->excessSeconds));
 
-                message(NOTICE_M, "Max anomaly traffic: " + bytesToString(this->maxAnomalyTraffic) + "/sec");
+                        message(NOTICE_M, "Max anomaly traffic: " + bytesToString(this->maxAnomalyTraffic) + "/sec");
 
-                this->averageAnomalyTraffic /= this->excessSeconds;
-                message(NOTICE_M, "Average anomaly traffic: " + bytesToString(this->averageAnomalyTraffic) + "/sec");
+                        this->averageAnomalyTraffic /= this->excessSeconds;
+                        message(NOTICE_M, "Average anomaly traffic: " + bytesToString(this->averageAnomalyTraffic) + "/sec");
+                }
 
                 this->fixingLimit = false;
 

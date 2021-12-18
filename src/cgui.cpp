@@ -372,6 +372,10 @@ void Cgui::printMessages()
 
         for (int i = 0; i < MESSAGEWIN_H - 2; i++)
         {
+                if ((int)lastMessages[i].size() > MESSAGEWIN_W)
+                {
+                        lastMessages[i] = lastMessages[i].erase(MESSAGEWIN_W - 4) + " >";
+                }
                 this->colorPrintMessage(lastMessages[i], 1, 1 + i);
         }
 
