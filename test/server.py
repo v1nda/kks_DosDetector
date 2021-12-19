@@ -22,7 +22,5 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         if not data:
                                 break
 
-
-
 if __name__ == '__main__':
         exit(0)

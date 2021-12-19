@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <algorithm>
 
+#include <fstream>
+
 std::string mode = MODE_DEFAULT;
 std::string status = STATUS_OK;
 
@@ -347,6 +349,9 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
         std::vector<long long> capture;
         std::string str = "--";
 
+        std::fstream file("test/src/training_dump.txt", std::ios::in);
+        std::string s = "";
+        message(NOTICE_M, "TEST: open traffic file");
         for (int i = 0; i < this->numberOfPeriods; i++)
         {
                 message(NOTICE_M, "Start of " + std::to_string(i + 1) + " capture out of " + std::to_string(this->numberOfPeriods) + " (" + secondsToString(this->periodLength) + ") ...");
@@ -360,12 +365,11 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
                                 return;
                         }
 
-                        std::this_thread::sleep_until(timer.getTimeCutoff(STATISTIC_CUTOFF_F));
-                        timer.setTimeCutoff(STATISTIC_CUTOFF_F);
-
-                        long long bytes = sniffer.getTrafficPerSec();
-                        capture.push_back(bytes);
-                        fullCapture.push_back(bytes);
+                        if (std::getline(file, s))
+                        {
+                                capture.push_back(atoi(s.c_str()));
+                                fullCapture.push_back(atoi(s.c_str()));
+                        }
                 }
 
                 message(NOTICE_M, std::to_string(i + 1) + " capture out of " + std::to_string(this->numberOfPeriods) + " completed");
@@ -375,6 +379,8 @@ void Statistic::training(Timer &timer, Sniffer &sniffer)
                 capture.clear();
         }
 
+        file.close();
+        message(NOTICE_M, "TEST: close traffic file");
         long long centralLine = this->averaging(fullCapture);
 
         str = bytesToString(centralLine);
