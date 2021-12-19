@@ -372,7 +372,7 @@ void Cgui::printMessages()
 
         for (int i = 0; i < MESSAGEWIN_H - 2; i++)
         {
-                if ((int)lastMessages[i].size() > MESSAGEWIN_W)
+                if ((int)lastMessages[i].size() >= MESSAGEWIN_W - 2)
                 {
                         lastMessages[i] = lastMessages[i].erase(MESSAGEWIN_W - 4) + " >";
                 }

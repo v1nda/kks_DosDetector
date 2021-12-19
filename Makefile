@@ -1,10 +1,12 @@
 all: dosdetector
 
-SRC_PATH = src/
-OBJ_PATH = obj/
+SRC_PATH = src
+OBJ_PATH = obj
+
+dummy_build_folder := $(shell mkdir -p $(OBJ_PATH))
 
 dosdetector: $(OBJ_PATH)/message.o $(OBJ_PATH)/timer.o $(OBJ_PATH)/sniffer.o $(OBJ_PATH)/statistics.o $(OBJ_PATH)/cgui.o $(OBJ_PATH)/dosdetector.o
-	g++ -o dosdetector $(OBJ_PATH)/*.o -pthread -lpcap -lncurses
+	g++ -o dosdetector $(OBJ_PATH)/*.o -pthread -lpcap -lncursesw
 
 $(OBJ_PATH)/message.o: $(SRC_PATH)/message.cpp
 	g++ -c $(SRC_PATH)/message.cpp -o $(OBJ_PATH)/message.o
