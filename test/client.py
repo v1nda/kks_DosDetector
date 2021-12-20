@@ -4,14 +4,16 @@
 import socket
 import time
 
-HOST = '192.168.40.0'
+HOST = '127.0.0.1'
 PORT = 6667
+
+src_file = 'src_dump_1.txt'
 
 data = []
 
-with open('src_dump_.txt', 'r') as f:
-                for i in f:
-                        data.append(int(i))
+with open(src_file, 'r') as f:
+        for i in f:
+                data.append(int(i))
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         
@@ -27,6 +29,3 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         s.sendall(string.encode('ascii'))
 
                         time.sleep(1)
-
-if __name__ == '__main__':
-        exit(0)

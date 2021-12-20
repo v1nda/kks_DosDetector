@@ -3,11 +3,13 @@
 
 import random
 
-def generate():
+src_file = 'training_dump.txt'
+dst_file_1 = 'src_dump_1.txt'
+dst_file_2 = 'src_dump_2.txt'
 
-        src_file = 'training_dump.txt'
-        dst_file_1 = 'src_dump_1.txt'
-        dst_file_2 = 'src_dump_2.txt'
+start_second = 230700
+
+def generate():
 
         traffic_src = []
         traffic_dst_1 = []
@@ -38,12 +40,12 @@ def generate():
 
         with open(dst_file_1, 'w') as dst_dump:
                 for i in range(len(traffic_dst_1)):
-                        if i > 230700:
+                        if i > start_second:
                                 dst_dump.write(str(traffic_dst_1[i]) + '\n')
 
         with open(dst_file_2, 'w') as dst_dump:
                 for i in range(len(traffic_dst_2)):
-                        if i > 230700:
+                        if i > start_second:
                                 dst_dump.write(str(traffic_dst_2[i]) + '\n')
 
 

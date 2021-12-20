@@ -8,3 +8,5 @@ obj/statistics.o
 obj/timer.o
 dosdetector.log
 notes.txt
+test/echo_log_2.txt
+test/echo_log.txt
