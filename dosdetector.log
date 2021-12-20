@@ -1,0 +1,185 @@
+[20.12.21 02:32:49] Arguments: device ens34
+[20.12.21 02:32:49] Arguments: time of capture 02:00:00
+[20.12.21 02:32:49] Arguments: number of captures 18
+[20.12.21 02:32:49] Arguments: warning reaction time 60
+[20.12.21 02:32:49] Arguments: alarm reaction time 180
+[20.12.21 02:32:49] Arguments: analysis of training capture 1
+[20.12.21 02:32:49] Timer: start of timer
+[20.12.21 02:32:49] Timer: initialisation completed
+[20.12.21 02:32:49] CGUI: initialisation completed
+[20.12.21 02:32:49] Sniffer: device: ens34
+[20.12.21 02:32:49] Sniffer: filter expression: no filter
+[20.12.21 02:32:49] Sniffer: initialization completed
+[20.12.21 02:32:49] Statistic: initialization completed
+[20.12.21 02:32:49] Start of console interface ...
+[20.12.21 02:32:51] Start of sniffing ...
+[20.12.21 02:32:52] Start of traffic counting ...
+[20.12.21 02:32:53] Training will start in 5 seconds ...
+[20.12.21 02:32:58] Start of training ...
+[20.12.21 02:32:58] TEST: open traffic file
+[20.12.21 02:32:58] Start of 1 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 1 capture out of 18 completed
+[20.12.21 02:32:58] Start of 2 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 2 capture out of 18 completed
+[20.12.21 02:32:58] Start of 3 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 3 capture out of 18 completed
+[20.12.21 02:32:58] Start of 4 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 4 capture out of 18 completed
+[20.12.21 02:32:58] Start of 5 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 5 capture out of 18 completed
+[20.12.21 02:32:58] Start of 6 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 6 capture out of 18 completed
+[20.12.21 02:32:58] Start of 7 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 7 capture out of 18 completed
+[20.12.21 02:32:58] Start of 8 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 8 capture out of 18 completed
+[20.12.21 02:32:58] Start of 9 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 9 capture out of 18 completed
+[20.12.21 02:32:58] Start of 10 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 10 capture out of 18 completed
+[20.12.21 02:32:58] Start of 11 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 11 capture out of 18 completed
+[20.12.21 02:32:58] Start of 12 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 12 capture out of 18 completed
+[20.12.21 02:32:58] Start of 13 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 13 capture out of 18 completed
+[20.12.21 02:32:58] Start of 14 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 14 capture out of 18 completed
+[20.12.21 02:32:58] Start of 15 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 15 capture out of 18 completed
+[20.12.21 02:32:58] Start of 16 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 16 capture out of 18 completed
+[20.12.21 02:32:58] Start of 17 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 17 capture out of 18 completed
+[20.12.21 02:32:58] Start of 18 capture out of 18 (02:00:00) ...
+[20.12.21 02:32:58] 18 capture out of 18 completed
+[20.12.21 02:32:58] TEST: close traffic file
+[20.12.21 02:32:58] Central line: 92.63 KB
+[20.12.21 02:32:58] Smoothing coeffitient: 0.31
+[20.12.21 02:32:58] Floating window size: 5
+[20.12.21 02:32:58] Number of exceedances to determine the anomaly: 3
+[20.12.21 02:32:58] Start of analysing capture ...
+[20.12.21 02:32:59] Warning reaction time: 00:00:10
+[20.12.21 02:32:59] Alarm reaction time: 00:02:00
+[20.12.21 02:32:59] Analisys complete
+[20.12.21 02:32:59] Training completed
+[20.12.21 02:33:04] Detection will start in 5 seconds ...
+[20.12.21 02:33:08] Start of detection ...
+[20.12.21 03:07:01] WARNING: Limit is fixed: 1.22 MB
+[20.12.21 03:07:01] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 03:07:03] Limit released
+[20.12.21 03:07:03] Duration of anomaly: 00:00:11
+[20.12.21 03:07:03] Max anomaly traffic: 10.15 MB/sec
+[20.12.21 03:07:03] Average anomaly traffic: 3.58 MB/sec
+[20.12.21 03:08:30] WARNING: Limit is fixed: 1.21 MB
+[20.12.21 03:08:30] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 03:09:47] Limit released
+[20.12.21 03:09:47] Duration of anomaly: 00:01:26
+[20.12.21 03:09:47] Max anomaly traffic: 16.52 MB/sec
+[20.12.21 03:09:47] Average anomaly traffic: 8.51 MB/sec
+[20.12.21 03:10:05] WARNING: Limit is fixed: 9.13 MB
+[20.12.21 03:10:05] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 03:10:11] Limit released
+[20.12.21 03:10:11] Duration of anomaly: 00:00:15
+[20.12.21 03:10:11] Max anomaly traffic: 16.98 MB/sec
+[20.12.21 03:10:11] Average anomaly traffic: 11.02 MB/sec
+[20.12.21 03:10:41] WARNING: Limit is fixed: 2.87 MB
+[20.12.21 03:10:41] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 03:10:44] Limit released
+[20.12.21 03:10:44] Duration of anomaly: 00:00:12
+[20.12.21 03:10:44] Max anomaly traffic: 9.07 MB/sec
+[20.12.21 03:10:44] Average anomaly traffic: 6.66 MB/sec
+[20.12.21 03:11:19] WARNING: Limit is fixed: 5.41 MB
+[20.12.21 03:11:19] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 03:11:20] Limit released
+[20.12.21 03:11:20] Duration of anomaly: 00:00:10
+[20.12.21 03:11:20] Max anomaly traffic: 17.11 MB/sec
+[20.12.21 03:11:20] Average anomaly traffic: 12.88 MB/sec
+[20.12.21 03:12:31] WARNING: Limit is fixed: 2.86 MB
+[20.12.21 03:12:31] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 03:14:21] ALARM: Time of exceeding a fixed limit: 00:02:00
+[20.12.21 03:15:36] Limit released
+[20.12.21 03:15:36] Duration of anomaly: 00:03:14
+[20.12.21 03:15:36] Max anomaly traffic: 28.17 MB/sec
+[20.12.21 03:15:36] Average anomaly traffic: 10.53 MB/sec
+[20.12.21 03:30:06] WARNING: Limit is fixed: 2.90 MB
+[20.12.21 03:30:06] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 03:31:56] ALARM: Time of exceeding a fixed limit: 00:02:00
+[20.12.21 03:33:00] Limit released
+[20.12.21 03:33:00] Duration of anomaly: 00:03:03
+[20.12.21 03:33:00] Max anomaly traffic: 15.62 MB/sec
+[20.12.21 03:33:00] Average anomaly traffic: 10.50 MB/sec
+[20.12.21 03:33:13] WARNING: Limit is fixed: 4.71 MB
+[20.12.21 03:33:13] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 03:33:30] Limit released
+[20.12.21 03:33:30] Duration of anomaly: 00:00:26
+[20.12.21 03:33:30] Max anomaly traffic: 11.55 MB/sec
+[20.12.21 03:33:30] Average anomaly traffic: 8.28 MB/sec
+[20.12.21 03:35:09] WARNING: Limit is fixed: 11.86 MB
+[20.12.21 03:35:09] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 03:35:25] Limit released
+[20.12.21 03:35:25] Duration of anomaly: 00:00:25
+[20.12.21 03:35:25] Max anomaly traffic: 29.75 MB/sec
+[20.12.21 03:35:25] Average anomaly traffic: 22.94 MB/sec
+[20.12.21 03:51:25] WARNING: Limit is fixed: 5.59 MB
+[20.12.21 03:51:25] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 03:52:50] Limit released
+[20.12.21 03:52:50] Duration of anomaly: 00:01:34
+[20.12.21 03:52:50] Max anomaly traffic: 9.16 MB/sec
+[20.12.21 03:52:50] Average anomaly traffic: 8.34 MB/sec
+[20.12.21 03:55:36] WARNING: Limit is fixed: 1.19 MB
+[20.12.21 03:55:36] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 03:56:22] Limit released
+[20.12.21 03:56:22] Duration of anomaly: 00:00:55
+[20.12.21 03:56:22] Max anomaly traffic: 7.68 MB/sec
+[20.12.21 03:56:22] Average anomaly traffic: 4.97 MB/sec
+[20.12.21 04:03:05] WARNING: Limit is fixed: 1.25 MB
+[20.12.21 04:03:05] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 04:04:55] ALARM: Time of exceeding a fixed limit: 00:02:00
+[20.12.21 04:15:19] Limit released
+[20.12.21 04:15:19] Duration of anomaly: 00:12:23
+[20.12.21 04:15:19] Max anomaly traffic: 37.52 MB/sec
+[20.12.21 04:15:19] Average anomaly traffic: 12.28 MB/sec
+[20.12.21 04:15:36] WARNING: Limit is fixed: 2.38 MB
+[20.12.21 04:15:36] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 04:15:52] Limit released
+[20.12.21 04:15:52] Duration of anomaly: 00:00:25
+[20.12.21 04:15:52] Max anomaly traffic: 14.95 MB/sec
+[20.12.21 04:15:52] Average anomaly traffic: 7.21 MB/sec
+[20.12.21 04:16:05] WARNING: Limit is fixed: 1.91 MB
+[20.12.21 04:16:05] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 04:16:12] Limit released
+[20.12.21 04:16:12] Duration of anomaly: 00:00:16
+[20.12.21 04:16:12] Max anomaly traffic: 14.49 MB/sec
+[20.12.21 04:16:12] Average anomaly traffic: 7.08 MB/sec
+[20.12.21 04:16:30] WARNING: Limit is fixed: 6.98 MB
+[20.12.21 04:16:30] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 04:17:29] Limit released
+[20.12.21 04:17:29] Duration of anomaly: 00:01:08
+[20.12.21 04:17:29] Max anomaly traffic: 12.54 MB/sec
+[20.12.21 04:17:29] Average anomaly traffic: 8.47 MB/sec
+[20.12.21 04:18:36] WARNING: Limit is fixed: 12.25 MB
+[20.12.21 04:18:36] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 04:18:47] Limit released
+[20.12.21 04:18:47] Duration of anomaly: 00:00:20
+[20.12.21 04:18:47] Max anomaly traffic: 15.69 MB/sec
+[20.12.21 04:18:47] Average anomaly traffic: 14.16 MB/sec
+[20.12.21 04:21:21] WARNING: Limit is fixed: 4.53 MB
+[20.12.21 04:21:21] WARNING: Time of exceeding a fixed limit: 00:00:10
+[20.12.21 04:21:46] Limit released
+[20.12.21 04:21:46] Duration of anomaly: 00:00:34
+[20.12.21 04:21:46] Max anomaly traffic: 6.00 MB/sec
+[20.12.21 04:21:46] Average anomaly traffic: 5.59 MB/sec
+[20.12.21 04:27:21] Interruption ...
+[20.12.21 04:27:22] Detection completed
+[20.12.21 04:27:22] Number of recodered anomalys 3
+[20.12.21 04:27:24] End of traffic counting
+[20.12.21 04:27:25] End of sniffing
+[20.12.21 04:27:25] End of console interface
+[20.12.21 04:27:27] Statistic: end of statistic
+[20.12.21 04:27:27] Sniffer: total processed 23.02 GB
+[20.12.21 04:27:27] Sniffer: total processed 34 m packets
+[20.12.21 04:27:27] Sniffer: end of sniffer
+[20.12.21 04:27:27] CGUI: end of CGUI
+[20.12.21 04:27:27] Timer: working time: 01:54:38
+[20.12.21 04:27:27] Timer: end of timer
